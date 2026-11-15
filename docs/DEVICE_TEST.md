@@ -7,14 +7,14 @@ CI 能证明的是"能构建、单测通过、CLI 能跑"，**证明不了**拦�
 | 阶段 | 验的是什么 | 前置条件 | 耗时 |
 |---|---|---|---|
 | **阶段 A** | guard 拦截链本身（策略、校验、确认、脱敏、限流、审计） | 一台 Android 8.0+ 手机，装 sample APK | 20 分钟 |
-| **阶段 B** | 与平台 AppFunctions 的接线（函数被系统收录、`adb` 直接调用、Agent 真实发起） | Android 16+ 设备（构建侧前置已满足：compileSdk 37 / AGP 9.1.0，sample 已接线） | 1～2 小时 |
+| **阶段 B** | 与平台 AppFunctions 的接线（函数被系统收录、`adb` 直接调用、Agent 真实发起） | Android 17（API 37）真机（2026-11-16 已实测通过） | 1～2 小时 |
 
 阶段 A 不需要任何平台 API：sample 首页每个按钮都等价于一次 Agent 调用，走的是同一条
 `AfGuard.intercept(...)` 路径，只是调用方从"系统 Agent"换成了"你自己"。**策略、校验、
 确认、限流、脱敏、审计这六件事，在阶段 A 就能全部验完。**
 
 阶段 B 才是 `docs/` 里原本设想的那套端到端验收。构建侧前置已经补齐，`sample` 也接好了
-`@AppFunctionServiceEntryPoint`，剩下的只有"插上设备跑一遍"（见文末"阶段 B：已接线，待真机"）。
+`@AppFunctionServiceEntryPoint`，真机那一步已经跑过（见文末"阶段 B：已接线，真机已验证"）。
 
 ---
 
@@ -57,8 +57,10 @@ adb logcat -c && adb logcat -s AFG:V AFG/Confirm:V AndroidRuntime:E
 > 连同"超时后弹窗是否从屏幕上消失"，仍然只能真机验（见 A3、A8 的手工备注）。
 > 已自动化的部分只是**决策与生命周期**：超时判否、无界面判否、detach 后判否、主线程不自等。
 
-**当前状态（2026-11-12）**：CI 单测 34 条全绿（`:guard-core:testDebugUnitTest` +
-`:guard-ui:testDebugUnitTest`），阶段 A 剩下 3 项手工 + 阶段 B 全部，仍需一台真机。
+**当前状态（2026-11-16）**：CI 单测 34 条全绿（`:guard-core:testDebugUnitTest` +
+`:guard-ui:testDebugUnitTest`），**阶段 B 已在 Android 17（API 37）真机上通过**（见文末实测记录）。
+阶段 A 剩余的手工项（A3 弹窗外观与点击、A8 弹窗是否真的收起、A11 杀进程清空、A12 关弹窗权限降级）
+与阶段 B 的 B4（后台调用）、B5（关闭 AppFunction 开关）仍待补。
 
 | # | 操作 | 期望 | 失败指向 |
 |---|---|---|---|
@@ -90,9 +92,14 @@ adb logcat -c && adb logcat -s AFG:V AFG/Confirm:V AndroidRuntime:E
 
 ---
 
-## 阶段 B：已接线，待真机
+## 阶段 B：已接线，真机已验证（2026-11-16）
 
 ### 状态
+
+**结论**：2026-11-16 在一台 Android 17（API 37）真机上跑通 B1、B2、B3、`wipeAllNotes`、`exportNotes`
+五项，系统侧确实收进了四个函数、`adb` 也确实调得动，确认链路的"拒绝"与"允许"两个分支都走到了。
+唯一一处与预期不同：`callerPackage` 退化成 App 自己（原因见"已知需要留意的地方"里 caller 切线程那条），
+属于已记录的限制，不是新问题。
 
 接线已落地（PR 见仓库 `build/phase-b-wiring`）：`compileSdk 37`、`AGP 9.1.0`、
 `androidx.appfunctions 1.0.0-rc01` + KSP 编译器，`sample` 新增带 `@AppFunctionServiceEntryPoint`
@@ -143,13 +150,15 @@ adb shell "cmd app_function execute-app-function \
 
 ### 接好之后的验收项
 
-| # | 操作 | 期望 |
-|---|---|---|
-| B1 | `list-app-functions` | 四个函数都在，参数/返回值有描述 |
-| B2 | `execute-app-function` 调 `listNotes` | 返回数据；审计里 `callerPackage` 是调用方而不是自己 |
-| B3 | 调 `deleteNote` | 弹窗里显示的是**真实调用方包名**；拒绝后函数返回 `ERROR_DENIED` |
-| B4 | 后台（无 Activity）时被调用 | 拒绝而非静默放行 |
-| B5 | 系统设置里关闭该 App 的 AppFunction | 调用方收到 `ERROR_DISABLED`，不进入确认流程 |
+| # | 操作 | 期望 | 实测（2026-11-16，Android 17 / API 37） |
+|---|---|---|---|
+| B1 | `list-app-functions` | 四个函数都在，参数/返回值有描述 | ✅ 收录 `NoteAppFunctionService#listNotes` / `#deleteNote` / `#exportNotes` / `#wipeAllNotes` |
+| B2 | `execute-app-function` 调 `listNotes` | 返回数据；审计里 `callerPackage` 是调用方而不是自己 | ✅ 放行，返回笔记三条。`callerPackage` 退化成本 App —— 已知限制（见文末 caller 切线程那条），不是这一版的回归 |
+| B3 | 调 `deleteNote` | 弹窗里显示的是**真实调用方包名**；拒绝后函数返回 `ERROR_DENIED` | ✅ 首次 `USER_DENIED`（hint 带 `Do not retry. Ask the user first.`），二次确认后 `deleted n_001` |
+| B4 | 后台（无 Activity）时被调用 | 拒绝而非静默放行 | ⬜ 未跑。本轮这个位置跑的是 `wipeAllNotes`，见 B4′ |
+| B4′ | 调 `wipeAllNotes`（永久拒绝策略） | 不弹窗，返回不可重试的阻断 | ✅ 返回 `FUNCTION_BLOCKED` |
+| B5 | 系统设置里关闭该 App 的 AppFunction | 调用方收到 `ERROR_DISABLED`，不进入确认流程 | ⬜ 未跑。本轮这个位置跑的是 `exportNotes`，见 B5′ |
+| B5′ | 调 `exportNotes`（脱敏 + 每次确认） | 首次要求确认；允许后返回值里手机号被替换 | ✅ 首次 `USER_DENIED`，二次返回 `[REDACTED:PHONE]` ×3 |
 
 ---
 
@@ -173,6 +182,7 @@ adb shell "cmd app_function execute-app-function \
 | 日期 | 设备 / 系统 | 阶段 | 结论 | 备注 |
 |---|---|---|---|---|
 | — | — | A | 未测 | `0.1.0-alpha3` 尚未在真机上跑过 |
-| 2026-11-12 | CI 构建产物（非真机） | B | 代码侧完成 | compileSdk 37 / AGP 9.1.0 已升级，Service 与 assets schema 已随 APK 打包，manifest 注册就位；B1～B5 待真机执行 |
+| 2026-11-12 | CI 构建产物（非真机） | B | 代码侧完成 | compileSdk 37 / AGP 9.1.0 已升级，Service 与 assets schema 已随 APK 打包，manifest 注册就位 |
+| 2026-11-16 | Android 17（API 37）真机，Termux + adb | B | ✅ 通过 | B1 列出 4 个函数；B2 `listNotes` 放行返回三条；B3 `deleteNote` 首次 `USER_DENIED`、二次 `deleted n_001`；B4′ `wipeAllNotes` → `FUNCTION_BLOCKED`；B5′ `exportNotes` 首次 `USER_DENIED`、二次返回 `[REDACTED:PHONE]`×3。原清单定义的 B4（后台调用）与 B5（关闭开关）本轮未覆盖，待补 |
 
 每验完一项就把对应行改成 `✅`，失败写清项号 + logcat 片段，然后开 issue。

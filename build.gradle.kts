@@ -23,7 +23,7 @@ plugins {
 
 allprojects {
     group = "io.github.yangyang2857-rgb"
-    version = "0.1.0-alpha3"
+    version = "0.1.0-alpha4"
 }
 
 // ---------------------------------------------------------------------------

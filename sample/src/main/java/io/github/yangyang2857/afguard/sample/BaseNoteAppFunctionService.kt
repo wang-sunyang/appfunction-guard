@@ -19,8 +19,15 @@ import kotlinx.coroutines.withContext
  *
  * 为什么是 abstract：rc01 之后 App Function 走编译期入口点架构，[AppFunctionServiceEntryPoint]
  * 只标注在抽象类上，KSP 生成具体实现（`NoteAppFunctionService`）与
- * `res/xml/note_app_function_service.xml`，所以业务代码里没有一行 `onExecuteFunction` 的
+ * `assets/note_app_function_service.xml`，所以业务代码里没有一行 `onExecuteFunction` 的
  * when 分支——分发、参数反序列化、错误映射都由生成代码承担。
+ *
+ * 注意生成物在 `assets/`，不在 `res/xml/`：manifest 里若写成 `android:resource="@xml/..."`，
+ * AAPT 会直接报 `resource not found`。另外 `<service>` 上除了 `BIND_APP_FUNCTION_SERVICE`
+ * 权限与 `android.app.appfunctions.AppFunctionService` action，还必须补两条 `<property>`——
+ * `android.app.appfunctions.schema` 指向 `app_functions_schema.xsd`、
+ * `android.app.appfunctions.v2` 指向同一个 xml 文件名。缺这两条时 APK 里文件齐全、
+ * action 也对，系统照样不索引（表现为 `list-app-functions` 返回 `{}`）。
  *
  * 为什么全部包在 withContext(Dispatchers.IO)：函数默认跑在 UI 线程，而 guard 的确认链路
  * 是阻塞等用户点按钮（`DialogConfirmationHandler` 内部再用 runOnUiThread 弹窗）。

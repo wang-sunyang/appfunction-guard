@@ -65,13 +65,13 @@ Everything runs before your business code. Nothing is a decorator you can forget
 
 ```kotlin
 dependencies {
-    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha3")
-    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha3")
+    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
+    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
 
     // optional: ready-made confirmation dialog
-    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha3")
+    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha4")
     // optional: audit records without pulling in Android
-    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha3")
+    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha4")
 }
 ```
 
@@ -258,8 +258,8 @@ What actually broke during week 1, written down while it still hurt: [给 Androi
 
 ```kotlin
 // same coordinates as in Install above
-implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha3")
-ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha3")
+implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
+ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
 ```
 
 All four library modules are on Maven Central since 2026-11-12 — resolve them straight from `https://repo1.maven.org/maven2/`, no JitPack, no local build. Release process: [docs/PUBLISHING.md](docs/PUBLISHING.md).
@@ -278,8 +278,8 @@ Honest state of things:
 - [x] `sample/` — runnable demo app covering all four policies, rate limiting, redaction, audit viewer
 - [x] `guard-ui` — drop-in confirmation dialog (`DialogConfirmationHandler`), used by `sample` itself
 - [x] `guard-cli` — audit export to CSV / JSONL + summary, smoke tested in CI
-- [x] Maven Central — `0.1.0-alpha3` of `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` is published and downloadable from `repo1.maven.org` (GPG signed, sources + javadoc attached). Coordinates use `io.github.yangyang2857-rgb` because Portal only grants `io.github.*` for the account name. Process: [docs/PUBLISHING.md](docs/PUBLISHING.md)
-- [ ] **End-to-end verification on a real device** — every **decision** in the chain is now covered by CI unit tests (34 of them, Robolectric: policy mapping, validation, confirmation flow, timeout / no-UI denial, redaction, rate limit, audit). What CI still cannot do is run against a live `AppFunctionService` and prove that tapping "allow" really executes (and "deny" really does not). Remaining manual items: [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md)
+- [x] Maven Central — `0.1.0-alpha4` of `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` is published and downloadable from `repo1.maven.org` (GPG signed, sources + javadoc attached). Coordinates use `io.github.yangyang2857-rgb` because Portal only grants `io.github.*` for the account name. Process: [docs/PUBLISHING.md](docs/PUBLISHING.md)
+- [x] **End-to-end verification on a real device** — 2026-11-16, Android 17 (API 37): all four functions are indexed by the platform, `listNotes` passes through, `deleteNote` / `exportNotes` return `USER_DENIED` first and execute on the second (confirmed) attempt, `wipeAllNotes` returns `FUNCTION_BLOCKED`. Confirmation chain proven on both branches. Remaining manual items (dialog appearance, dialog teardown on timeout, process-kill audit reset, disabled-overlay fallback, background invocation, AppFunction toggle off): [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md)
 
 CI: [`build.yml`](.github/workflows/build.yml) runs on every push to `main` — assembles all four library modules plus `sample` / `guard-cli`, runs unit tests, smoke tests the CLI, verifies publication metadata. Details: [docs/CI.md](docs/CI.md)
 
@@ -301,10 +301,10 @@ Background reading on the risk model: the AppFunctions security analysis coverin
 
 | Week | Goal | State |
 |---|---|---|
-| 1 | Run it end-to-end on a device, write up what actually broke | open — checklist ready in [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md) |
+| 1 | Run it end-to-end on a device, write up what actually broke | done for phase B (B1–B3, B4′/B5′ green on Android 17, 2026-11-16); phase A manual items still open — [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md) |
 | 2 | `guard-ui` confirmation sheet + audit viewer | dialog done; audit viewer still lives in `sample` |
 | 3 | `guard-cli` export, policy lint (`afg check`) | export done; `afg check` not started |
-| 4 | Maven Central, v0.1.0 | `0.1.0-alpha3` published; `v0.1.0` waits on device verification |
+| 4 | Maven Central, v0.1.0 | `0.1.0-alpha4` published (first device-verified release); `v0.1.0` waits on the remaining manual items |
 
 ---
 

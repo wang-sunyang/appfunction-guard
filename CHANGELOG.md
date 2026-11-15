@@ -2,16 +2,25 @@
 
 以 [Semantic Versioning](https://semver.org/) 管理。
 
-## [Unreleased]
+## [0.1.0-alpha4] - 2026-11-16
+
+第一个真正装到设备上、被系统收录并执行过的版本。alpha3 只证明"能发布、单测能过"，这一版补上了平台侧那格空白。
 
 ### Added
-- `sample` 阶段 B 平台接线：`BaseNoteAppFunctionService` 用 `@AppFunctionServiceEntryPoint` 标注抽象类，KSP 生成 `NoteAppFunctionService` 与 `res/xml/note_app_function_service.xml`；`listNotes` / `deleteNote` / `exportNotes` / `wipeAllNotes` 四个函数真正暴露给系统 Agent，manifest 补齐 `BIND_APP_FUNCTION_SERVICE` 权限、`AppFunctionService` action 与 schema property
+- `sample` 阶段 B 平台接线：`BaseNoteAppFunctionService` 用 `@AppFunctionServiceEntryPoint` 标注抽象类，KSP 生成 `NoteAppFunctionService` 与 `assets/note_app_function_service.xml`；`listNotes` / `deleteNote` / `exportNotes` / `wipeAllNotes` 四个函数真正暴露给系统 Agent，manifest 补齐 `BIND_APP_FUNCTION_SERVICE` 权限、`AppFunctionService` action 与 schema property
 - 每个 AppFunction 都是 `suspend` + `Dispatchers.IO`，并统一经 `AfGuard.intercept` 拦截；被拒绝时返回 `AFGUARD_BLOCKED` + 结构化错误，而不是抛不透明异常
 
 ### Changed
 - 构建体系升到 **AGP 9.1.1 / Gradle 9.3.1 / compileSdk 37**。AGP 9 是主版本升级（内置 Kotlin、新 DSL、Gradle 9），这次先用 `android.builtInKotlin=false` + `android.newDsl=false` 保住现有 `kotlin-android` 写法，让改动面停在"版本 + 平台"，构建写法迁移单独做一次
 - 补删 `sample` 里 alpha3 声称删过、实际仍在的 `DialogConfirmationHandler` 旧副本（无人引用，缺主线程防死锁与超时收窗），`sample/README.md` 里"`CountDownLatch` + `runOnUiThread` 桥接"的描述改为指向 `guard-ui` 的实现，并写清 attach/detach、超时收窗、主线程判否四条约束
 - CI 改用 Gradle 9.3.1，Android SDK Platform 装 37（保留 36 供旧设备镜像）
+
+### Fixed
+- manifest 的 `<service>` 缺 `android.app.appfunctions.schema` 与 `android.app.appfunctions.v2` 两条 `<property>`：`BIND_APP_FUNCTION_SERVICE` 权限、action、`assets/` 里的 schema xml 都对，但系统就是不索引，`adb shell cmd app_function list-app-functions` 返回 `{}`。补上两条 property 后系统立即收录四个函数（`c4533658c6`）
+- KDoc 与 CHANGELOG 里"生成到 `res/xml/...`"的说法与实际不符：KSP 写的是 `assets/`，按资源目录去引用会被 AAPT 判 `resource not found`。改为 `assets/` 并写清两条 property 的必要性
+
+### Verified
+- 2026-11-16 在 Android 17（API 37）真机上跑完阶段 B：四个函数被系统收录；`listNotes` 放行返回数据；`deleteNote` / `exportNotes` 首次 `USER_DENIED`、二次确认后执行（确认链路双分支都走到了）；`wipeAllNotes` 返回 `FUNCTION_BLOCKED`。命令与逐项结果见 `docs/DEVICE_TEST.md`
 
 ### Why
 `androidx.appfunctions` 1.0.0-rc01 要求 compileSdk 37 + AGP 9.1+，不升就接不上阶段 B 的真机验证；而 AGP 9.1.1 又要求 Gradle ≥ 9.3.1。
