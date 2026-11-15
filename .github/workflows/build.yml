@@ -153,7 +153,10 @@ jobs:
         run: |
           set -euo pipefail
           gradle publishAllToLocal --stacktrace --no-daemon
-          V=0.1.0-alpha3
+          # 版本号从 build.gradle.kts 的 allprojects { version = ... } 里读，避免发版时忘了同步这里
+          V=$(grep -m1 -E '^[[:space:]]*version[[:space:]]*=' build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')
+          test -n "$V" || { echo "cannot read version from build.gradle.kts"; exit 1; }
+          echo "checking published artifacts for version $V"
           for M in guard-audit guard-core guard-ksp guard-ui; do
             D="$HOME/.m2/repository/io/github/yangyang2857-rgb/$M/$V"
             echo "--- $M ---"
