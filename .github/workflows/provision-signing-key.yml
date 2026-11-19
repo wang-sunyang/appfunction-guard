@@ -19,7 +19,7 @@ on:
       email:
         description: 'GPG 身份邮箱'
         required: true
-        default: 'yangyang2857-rgb@users.noreply.github.com'
+        default: 'wang-sunyang@users.noreply.github.com'
       passphrase:
         description: '私钥口令（留空自动生成）'
         required: false

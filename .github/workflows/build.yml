@@ -158,14 +158,14 @@ jobs:
           test -n "$V" || { echo "cannot read version from build.gradle.kts"; exit 1; }
           echo "checking published artifacts for version $V"
           for M in guard-audit guard-core guard-ksp guard-ui; do
-            D="$HOME/.m2/repository/io/github/yangyang2857-rgb/$M/$V"
+            D="$HOME/.m2/repository/io/github/wang-sunyang/$M/$V"
             echo "--- $M ---"
             ls -1 "$D" || { echo "missing directory: $M"; exit 1; }
             test -f "$D/$M-$V.pom"          || { echo "missing pom: $M"; exit 1; }
             test -f "$D/$M-$V-sources.jar"  || { echo "missing sources: $M"; exit 1; }
             test -f "$D/$M-$V-javadoc.jar"  || { echo "missing javadoc: $M"; exit 1; }
             grep -q "MIT License" "$D/$M-$V.pom" || { echo "pom license missing: $M"; exit 1; }
-            grep -q "github.com/yangyang2857-rgb/appfunction-guard" "$D/$M-$V.pom" || { echo "pom scm missing: $M"; exit 1; }
+            grep -q "github.com/wang-sunyang/appfunction-guard" "$D/$M-$V.pom" || { echo "pom scm missing: $M"; exit 1; }
           done
           echo "publication metadata OK"
 
