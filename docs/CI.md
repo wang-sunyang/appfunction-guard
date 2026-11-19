@@ -18,7 +18,7 @@
 
 ## 看结果
 
-- Actions 页面：https://github.com/yangyang2857-rgb/appfunction-guard/actions/workflows/build.yml
+- Actions 页面：https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml
 - README 顶部的 `build` 徽章就是这条工作流的实时状态。
 
 ## 为什么曾经刻意没有这个文件

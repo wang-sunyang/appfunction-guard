@@ -1,6 +1,6 @@
 # 给 Android 的 AI 后门装锁：第一周踩坑记录
 
-> 项目：[appfunction-guard](https://github.com/yangyang2857-rgb/appfunction-guard)（MIT，alpha）
+> 项目：[appfunction-guard](https://github.com/wang-sunyang/appfunction-guard)（MIT，alpha）
 > 结论先放这里：**7 天里真正花时间的不是写拦截逻辑，而是四类"编译通过、运行静默失效"的坑。**
 
 ## 一、起因不是技术问题，是权限问题
@@ -15,7 +15,7 @@ Android 16 的 AppFunctions 让 AI Agent 可以直接调用 App 里的函数，�
 - 用户问"昨晚那个助手对我的数据做了什么"，你拿什么回答？
 - Agent 拿到 `IllegalArgumentException` 之后会怎么做？大概率是原地重试。
 
-这五个问题不是缺 API，是缺一层策略。所以我写了 [AppFunction Guard](https://github.com/yangyang2857-rgb/appfunction-guard)：一个放在平台调用与业务代码之间的拦截链。
+这五个问题不是缺 API，是缺一层策略。所以我写了 [AppFunction Guard](https://github.com/wang-sunyang/appfunction-guard)：一个放在平台调用与业务代码之间的拦截链。
 
 ```
 业务代码 → AfGuard.intercept(functionId, args) { ... }
@@ -264,4 +264,4 @@ private fun digest(args: Bundle): String {
 
 ---
 
-*仓库：[github.com/yangyang2857-rgb/appfunction-guard](https://github.com/yangyang2857-rgb/appfunction-guard) · MIT*
+*仓库：[github.com/wang-sunyang/appfunction-guard](https://github.com/wang-sunyang/appfunction-guard) · MIT*

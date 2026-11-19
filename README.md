@@ -8,7 +8,7 @@
 [![Status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)](#status)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.2-7F52FF.svg)](https://kotlinlang.org)
 [![minSdk 26](https://img.shields.io/badge/minSdk-26-green.svg)](#requirements)
-[![build](https://github.com/yangyang2857-rgb/appfunction-guard/actions/workflows/build.yml/badge.svg)](https://github.com/yangyang2857-rgb/appfunction-guard/actions/workflows/build.yml)
+[![build](https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml/badge.svg)](https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml)
 
 ---
 
@@ -65,13 +65,13 @@ Everything runs before your business code. Nothing is a decorator you can forget
 
 ```kotlin
 dependencies {
-    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
-    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
+    ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 
     // optional: ready-made confirmation dialog
-    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-ui:0.1.0-alpha4")
     // optional: audit records without pulling in Android
-    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-audit:0.1.0-alpha4")
 }
 ```
 
@@ -258,8 +258,8 @@ What actually broke during week 1, written down while it still hurt: [给 Androi
 
 ```kotlin
 // same coordinates as in Install above
-implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
-ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
+implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
+ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 ```
 
 All four library modules are on Maven Central since 2026-11-12 — resolve them straight from `https://repo1.maven.org/maven2/`, no JitPack, no local build. Release process: [docs/PUBLISHING.md](docs/PUBLISHING.md).
@@ -278,7 +278,7 @@ Honest state of things:
 - [x] `sample/` — runnable demo app covering all four policies, rate limiting, redaction, audit viewer
 - [x] `guard-ui` — drop-in confirmation dialog (`DialogConfirmationHandler`), used by `sample` itself
 - [x] `guard-cli` — audit export to CSV / JSONL + summary, smoke tested in CI
-- [x] Maven Central — `0.1.0-alpha4` of `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` is published and downloadable from `repo1.maven.org` (GPG signed, sources + javadoc attached). Coordinates use `io.github.yangyang2857-rgb` because Portal only grants `io.github.*` for the account name. Process: [docs/PUBLISHING.md](docs/PUBLISHING.md)
+- [x] Maven Central — `0.1.0-alpha4` of `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` is published and downloadable from `repo1.maven.org` (GPG signed, sources + javadoc attached). Coordinates use `io.github.wang-sunyang` because Portal only grants `io.github.*` for the account name. Process: [docs/PUBLISHING.md](docs/PUBLISHING.md)
 - [x] **End-to-end verification on a real device** — 2026-11-16, Android 17 (API 37): all four functions are indexed by the platform, `listNotes` passes through, `deleteNote` / `exportNotes` return `USER_DENIED` first and execute on the second (confirmed) attempt, `wipeAllNotes` returns `FUNCTION_BLOCKED`. Confirmation chain proven on both branches. Remaining manual items (dialog appearance, dialog teardown on timeout, process-kill audit reset, disabled-overlay fallback, background invocation, AppFunction toggle off): [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md)
 
 CI: [`build.yml`](.github/workflows/build.yml) runs on every push to `main` — assembles all four library modules plus `sample` / `guard-cli`, runs unit tests, smoke tests the CLI, verifies publication metadata. Details: [docs/CI.md](docs/CI.md)

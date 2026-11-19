@@ -28,7 +28,7 @@ publishing {
                 pom {
                     name.set("AppFunction Guard :: audit")
                     description.set("Audit model and CSV/JSON export for AppFunction Guard — pure JVM, no Android dependency")
-                    url.set("https://github.com/yangyang2857-rgb/appfunction-guard")
+                    url.set("https://github.com/wang-sunyang/appfunction-guard")
                     licenses {
                         license {
                             name.set("MIT License")
@@ -37,15 +37,15 @@ publishing {
                     }
                     developers {
                         developer {
-                            id.set("yangyang2857-rgb")
+                            id.set("wang-sunyang")
                             name.set("Wang Sunyang")
-                            url.set("https://github.com/yangyang2857-rgb")
+                            url.set("https://github.com/wang-sunyang")
                         }
                     }
                     scm {
-                        connection.set("scm:git:git://github.com/yangyang2857-rgb/appfunction-guard.git")
-                        developerConnection.set("scm:git:ssh://github.com/yangyang2857-rgb/appfunction-guard.git")
-                        url.set("https://github.com/yangyang2857-rgb/appfunction-guard")
+                        connection.set("scm:git:git://github.com/wang-sunyang/appfunction-guard.git")
+                        developerConnection.set("scm:git:ssh://github.com/wang-sunyang/appfunction-guard.git")
+                        url.set("https://github.com/wang-sunyang/appfunction-guard")
                     }
                 }
         }

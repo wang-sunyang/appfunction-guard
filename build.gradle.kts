@@ -10,7 +10,7 @@ import org.gradle.plugins.signing.SigningExtension
 //   而 AGP 9 又要求 Gradle 9.1+，三者必须一起动。AppFunctions 本身仍然是 Android 16+ 的平台能力。
 //
 // 发布：四个可发布模块（guard-audit / guard-core / guard-ksp / guard-ui）统一用
-// group:io.github.yangyang2857-rgb，版本从这里下发给所有子项目，避免各写各的。
+// group:io.github.wang-sunyang，版本从这里下发给所有子项目，避免各写各的。
 // 发布流程见 docs/PUBLISHING.md。
 
 plugins {
@@ -22,7 +22,7 @@ plugins {
 }
 
 allprojects {
-    group = "io.github.yangyang2857-rgb"
+    group = "io.github.wang-sunyang"
     version = "0.1.0-alpha4"
 }
 
@@ -36,7 +36,7 @@ allprojects {
 // 没有密钥时仍然可以打包，但只够用来检查目录结构（CI 会用一次性密钥走完整流程）。
 //
 // 目录结构遵循 Portal 要求：
-//   io/github/yangyang2857-rgb/<artifactId>/<version>/<artifactId>-<version>[.jar|.aar|.pom|-sources.jar|-javadoc.jar][.asc]
+//   io/github/wang-sunyang/<artifactId>/<version>/<artifactId>-<version>[.jar|.aar|.pom|-sources.jar|-javadoc.jar][.asc]
 // ---------------------------------------------------------------------------
 
 val centralRepoDir = rootProject.layout.buildDirectory.dir("central-repo")

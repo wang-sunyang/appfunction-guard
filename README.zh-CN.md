@@ -59,13 +59,13 @@ AppFunctionService.onExecuteFunction()
 
 ```kotlin
 dependencies {
-    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
-    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
+    ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 
     // 可选：现成的确认弹窗
-    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-ui:0.1.0-alpha4")
     // 可选：不带 Android 依赖的审计记录
-    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-audit:0.1.0-alpha4")
 }
 ```
 
@@ -218,8 +218,8 @@ KSP 生成的表缺失时（构建配置错了），校验被跳过，但每条�
 
 ```kotlin
 // 坐标与上面「安装」一致
-implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
-ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
+implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
+ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 ```
 
 四个库模块自 2026-11-12 起已在 Maven Central，直接从 `https://repo1.maven.org/maven2/` 解析，不用 JitPack，也不用本地构建。发布流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)。
@@ -236,7 +236,7 @@ ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
 - [x] KSP 处理器（生成校验器 + 元数据表）
 - [x] `guard-ui` 确认弹窗（`DialogConfirmationHandler`），sample 自己就在用
 - [x] `guard-cli` 审计导出（CSV / JSONL + summary），CI 有冒烟
-- [x] Maven Central —— `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` 的 `0.1.0-alpha4` 已发布，可直接从 `repo1.maven.org` 下载（GPG 签名，带 sources 与 javadoc）。坐标用 `io.github.yangyang2857-rgb`，因为 Portal 只放行与账号名一致的 `io.github.*`。流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)
+- [x] Maven Central —— `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` 的 `0.1.0-alpha4` 已发布，可直接从 `repo1.maven.org` 下载（GPG 签名，带 sources 与 javadoc）。坐标用 `io.github.wang-sunyang`，因为 Portal 只放行与账号名一致的 `io.github.*`。流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)
 - [x] **真机端到端验证（阶段 B）** —— 2026-11-16 在 Android 17（API 37）真机上跑通：系统收录四个函数、`listNotes` 放行返回数据、`deleteNote` / `exportNotes` 首次 `USER_DENIED` 二次确认后执行、`wipeAllNotes` 返回 `FUNCTION_BLOCKED`。确认链路的拒绝与允许两个分支都验过。剩余手工项（弹窗外观与点击、超时后弹窗是否收起、杀进程审计清空、关弹窗权限降级、后台调用、关闭 AppFunction 开关）见 [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md)
 
 早期阶段，最有价值的是对**注解设计**的反馈，不是 bug 报告。

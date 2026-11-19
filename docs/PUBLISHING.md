@@ -5,7 +5,7 @@
 构建、POM 元数据、sources/javadoc、bundle 打包、签名、上传脚本都已经在仓库里，
 **剩下的只有账号相关的三件事**，这三件只能由仓库所有者本人操作：
 
-1. 在 Central Portal 认领 `io.github.yangyang2857-rgb` 这个命名空间
+1. 在 Central Portal 认领 `io.github.wang-sunyang` 这个命名空间
 2. 生成 User Token（不是登录密码）
 3. 把两个 secret 填进仓库
 
@@ -30,8 +30,8 @@ Sonatype 的 OSSRH + Nexus staging 流程（`nexus-staging-maven-plugin`、`publ
 
 ### 1. 认领命名空间
 
-打开 https://central.sonatype.com ，用 **GitHub 账号登录**（就是 `yangyang2857-rgb` 那个）。
-登录后 `io.github.yangyang2857-rgb` 会被自动认领 —— GitHub 系命名空间靠 OAuth 身份自动验证，
+打开 https://central.sonatype.com ，用 **GitHub 账号登录**（就是 `wang-sunyang` 那个）。
+登录后 `io.github.wang-sunyang` 会被自动认领 —— GitHub 系命名空间靠 OAuth 身份自动验证，
 不需要建临时仓库、不需要 TXT 记录。
 
 在 `Namespaces` 页确认它显示为 `Verified`。
@@ -65,7 +65,7 @@ Password: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 
 | 输入 | 填什么 |
 |---|---|
-| `email` | 默认的 `yangyang2857-rgb@users.noreply.github.com` 就行，不会暴露真实邮箱 |
+| `email` | 默认的 `wang-sunyang@users.noreply.github.com` 就行，不会暴露真实邮箱 |
 | `passphrase` | 留空，工作流自己生成 32 位随机串 |
 | `admin_token` | 一个有 `repo` 权限的 classic PAT，**只在这次运行里用来写 secret**，跑完可以去撤销 |
 
@@ -116,7 +116,7 @@ export MAVEN_CENTRAL_USERNAME=... MAVEN_CENTRAL_PASSWORD=...
 ## bundle 里到底有什么
 
 ```
-io/github/yangyang2857-rgb/guard-core/0.1.0-alpha3/
+io/github/wang-sunyang/guard-core/0.1.0-alpha3/
   guard-core-0.1.0-alpha3.aar
   guard-core-0.1.0-alpha3.aar.asc
   guard-core-0.1.0-alpha3.pom
