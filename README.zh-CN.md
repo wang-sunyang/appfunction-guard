@@ -57,17 +57,17 @@ AppFunctionService.onExecuteFunction()
 
 ## 安装
 
-> **groupId 已变更（2026-11）：** `0.1.0-alpha4` 及更早版本发布在 `io.github.yangyang2857-rgb` 下，该命名空间现已**弃用并冻结**（其绑定的 GitHub 账号已不存在）。从下一版本起，所有坐标改用 `io.github.wang-sunyang` —— 只有 groupId 变了，artifactId 不变。
+> **Maven 坐标（2026-11）：** 最新已发布版本 `0.1.0-alpha4` 仍位于旧 groupId `io.github.yangyang2857-rgb` 下，该命名空间现已**冻结**（其绑定的 GitHub 账号已不存在）。下面代码块是**当前可解析**的写法。从 `0.1.0-alpha5` 起改用 `io.github.wang-sunyang` —— 只有 groupId 变了，artifactId 不变。
 
 ```kotlin
 dependencies {
-    implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
-    ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
+    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
+    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
 
     // 可选：现成的确认弹窗
-    implementation("io.github.wang-sunyang:guard-ui:0.1.0-alpha4")
+    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha4")
     // 可选：不带 Android 依赖的审计记录
-    implementation("io.github.wang-sunyang:guard-audit:0.1.0-alpha4")
+    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha4")
 }
 ```
 
