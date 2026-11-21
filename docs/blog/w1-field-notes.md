@@ -41,7 +41,7 @@ Android 16 的 AppFunctions 让 AI Agent 可以直接调用 App 里的函数，�
 
 ```kotlin
 private fun loadGenerated(): GeneratedGuardTable? = try {
-    val clazz = Class.forName("io.github.yangyang2857.afguard.generated.AfGuardGeneratedValidators")
+    val clazz = Class.forName("io.github.wangsunyang.afguard.generated.AfGuardGeneratedValidators")
     clazz.getField("INSTANCE").get(null) as? GeneratedGuardTable
 } catch (t: Throwable) {
     null   // 没接 KSP 是合法用法，静默降级

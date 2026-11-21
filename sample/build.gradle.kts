@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "io.github.yangyang2857.afguard.sample"
+    namespace = "io.github.wangsunyang.afguard.sample"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "io.github.yangyang2857.afguard.sample"
+        applicationId = "io.github.wangsunyang.afguard.sample"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.compileSdk.get().toInt()
         versionCode = 1

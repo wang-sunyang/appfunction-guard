@@ -6,6 +6,7 @@
 
 ### Changed
 - 发布坐标从 `io.github.yangyang2857-rgb` 迁移到 `io.github.wang-sunyang`（GitHub 账号更名所致）。旧坐标 `io.github.yangyang2857-rgb:*`（`0.1.0-alpha3` / `0.1.0-alpha4`）仍可从 Central 解析，但已冻结、不再更新；`0.1.0-alpha5` 起统一走新坐标。
+- 代码包名（namespace）从 `io.github.yangyang2857.afguard` 迁移到 `io.github.wangsunyang.afguard`（清理旧账号残留；Java/Kotlin 包名去连字符，与 groupId `io.github.wang-sunyang` 的不一致是行业惯例）。
 
 ## [0.1.0-alpha4] - 2026-11-16
 

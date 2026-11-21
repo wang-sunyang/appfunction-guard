@@ -135,12 +135,12 @@ minAndroidGradlePluginVersion=9.1.0
 adb shell cmd app_function list-app-functions
 
 # 按包名过滤，看自己这一坨
-adb shell cmd app_function list-app-functions | grep -A 10 io.github.yangyang2857.afguard.sample
+adb shell cmd app_function list-app-functions | grep -A 10 io.github.wangsunyang.afguard.sample
 
 # 直接执行一个函数
 adb shell "cmd app_function execute-app-function \
-  --package io.github.yangyang2857.afguard.sample \
-  --function 'io.github.yangyang2857.afguard.sample.NoteAppFunctionService#listNotes' \
+  --package io.github.wangsunyang.afguard.sample \
+  --function 'io.github.wangsunyang.afguard.sample.NoteAppFunctionService#listNotes' \
   --parameters '{\"limit\": 5}'"
 ```
 

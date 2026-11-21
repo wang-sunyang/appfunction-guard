@@ -8,7 +8,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("io.github.yangyang2857.afguard.cli.MainKt")
+    mainClass.set("io.github.wangsunyang.afguard.cli.MainKt")
     applicationName = "guard-cli"
 }
 

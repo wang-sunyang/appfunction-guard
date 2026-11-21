@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "io.github.yangyang2857.afguard.ui"
+    namespace = "io.github.wangsunyang.afguard.ui"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

@@ -74,7 +74,7 @@ class NoteAppFunctionService : AppFunctionService() {
 
 ## 两个容易接错的点
 
-1. **不要在 UI 线程同步等弹窗。** `ConfirmationHandler.confirm()` 是阻塞调用，而 `AlertDialog` 必须在主线程创建。sample 不再自带实现，直接用 `guard-ui` 的 `io.github.yangyang2857.afguard.ui.DialogConfirmationHandler`：调用方在后台线程，`confirm()` 里用 `CountDownLatch` + `runOnUiThread` 把两边界接起来；在 `Activity.onCreate` 里 `attach(this)`、`onDestroy` 里 `detach(this)` 跟随宿主生命周期，超时会 dismiss 残留弹窗并返回拒绝，在主线程调用 `confirm()` 直接判否而不是死锁。自己实现时这四条缺一不可。
+1. **不要在 UI 线程同步等弹窗。** `ConfirmationHandler.confirm()` 是阻塞调用，而 `AlertDialog` 必须在主线程创建。sample 不再自带实现，直接用 `guard-ui` 的 `io.github.wangsunyang.afguard.ui.DialogConfirmationHandler`：调用方在后台线程，`confirm()` 里用 `CountDownLatch` + `runOnUiThread` 把两边界接起来；在 `Activity.onCreate` 里 `attach(this)`、`onDestroy` 里 `detach(this)` 跟随宿主生命周期，超时会 dismiss 残留弹窗并返回拒绝，在主线程调用 `confirm()` 直接判否而不是死锁。自己实现时这四条缺一不可。
 2. **`GuardConfig.init()` 之后再改 `auditSink`，要补一次 `GuardConfig.apply()`。** 审计出口是在 `init` 时挂上的，换出口不重新挂就会静默丢记录。
 
 ## 阶段 B：平台接线
@@ -91,4 +91,4 @@ CI 只证明"能编译、能装配"。真机上函数有没有被系统索引、
 ## 已知限制
 
 - `functionId` 取的是函数**简单名**。同一个 App 里两个类各有 `deleteNote` 会互相覆盖，务必保证全局唯一。
-- 未开启 `minifyEnabled` 混淆时正常；如果开 R8，记得保留 `io.github.yangyang2857.afguard.generated.**`，反射加载依赖类名。
+- 未开启 `minifyEnabled` 混淆时正常；如果开 R8，记得保留 `io.github.wangsunyang.afguard.generated.**`，反射加载依赖类名。
