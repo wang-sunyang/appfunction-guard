@@ -2,6 +2,11 @@
 
 以 [Semantic Versioning](https://semver.org/) 管理。
 
+## [Unreleased]
+
+### Changed
+- 发布坐标从 `io.github.yangyang2857-rgb` 迁移到 `io.github.wang-sunyang`（GitHub 账号更名所致）。旧坐标 `io.github.yangyang2857-rgb:*`（`0.1.0-alpha3` / `0.1.0-alpha4`）仍可从 Central 解析，但已冻结、不再更新；`0.1.0-alpha5` 起统一走新坐标。
+
 ## [0.1.0-alpha4] - 2026-11-16
 
 第一个真正装到设备上、被系统收录并执行过的版本。alpha3 只证明"能发布、单测能过"，这一版补上了平台侧那格空白。

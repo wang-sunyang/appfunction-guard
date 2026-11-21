@@ -63,6 +63,8 @@ Everything runs before your business code. Nothing is a decorator you can forget
 
 ## Install
 
+> **GroupId changed (2026-11):** `0.1.0-alpha4` and earlier were published under `io.github.yangyang2857-rgb`; that namespace is now **deprecated and frozen** (its GitHub account no longer exists). From the next release, all coordinates use `io.github.wang-sunyang` — only the groupId changes, artifactIds stay the same.
+
 ```kotlin
 dependencies {
     implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")

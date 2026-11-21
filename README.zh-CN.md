@@ -57,6 +57,8 @@ AppFunctionService.onExecuteFunction()
 
 ## 安装
 
+> **groupId 已变更（2026-11）：** `0.1.0-alpha4` 及更早版本发布在 `io.github.yangyang2857-rgb` 下，该命名空间现已**弃用并冻结**（其绑定的 GitHub 账号已不存在）。从下一版本起，所有坐标改用 `io.github.wang-sunyang` —— 只有 groupId 变了，artifactId 不变。
+
 ```kotlin
 dependencies {
     implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
