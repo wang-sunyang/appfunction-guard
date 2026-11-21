@@ -109,9 +109,25 @@ export MAVEN_CENTRAL_USERNAME=... MAVEN_CENTRAL_PASSWORD=...
 
 ### 版本号
 
-`build.gradle.kts` 里 `allprojects { version = "0.1.0-alpha3" }` 一处改，四个模块跟着变。
+`build.gradle.kts` 里 `allprojects { version = "..." }` 一处改，四个模块跟着变。
 **已发布的版本号不能重发**，Portal 会直接拒（`Version already exists`）。改完记得同步
 `gradle/libs.versions.toml` 里对自身的依赖（如果有）和 README 的坐标。
+
+### 发 `0.1.0-alpha5` 前的检查清单（坐标切换）
+
+`alpha5` 是旧坐标 `io.github.yangyang2857-rgb` 冻结后的**第一个新坐标版本**，
+发版前按顺序过一遍（当前 `build.gradle.kts` 里仍是 `0.1.0-alpha4`）：
+
+| # | 事项 | 位置 |
+|---|---|---|
+| 1 | 版本号改成 `0.1.0-alpha5`（不能复用 alpha4，Portal 会拒） | `build.gradle.kts` 的 `version` |
+| 2 | 安装块切回新坐标 `io.github.wang-sunyang:...:0.1.0-alpha5`，并删掉「当前可解析」提示 | `README.md` / `README.zh-CN.md` |
+| 3 | 同步本文件示例里的版本号 | `docs/PUBLISHING.md` |
+| 4 | 把 `[Unreleased]` 的坐标迁移条目落到 `0.1.0-alpha5` 小节 | `CHANGELOG.md` |
+| 5 | 确认 `io.github.wang-sunyang` 在 Portal 显示 Verified | central.sonatype.com |
+| 6 | 确认 secret 已填齐（`MAVEN_CENTRAL_USERNAME/PASSWORD` 等） | Settings → Secrets → Actions |
+
+全部勾完后，`Actions` → `publish-central` → Run workflow 即可。
 
 ## bundle 里到底有什么
 
