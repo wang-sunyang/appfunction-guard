@@ -1,0 +1,26 @@
+# CODEOWNERS — every path resolves to the sole copyright holder.
+# Default: nothing merges without review from @wang-sunyang.
+
+*       @wang-sunyang
+
+# Enforcement library, runtime and tooling
+/guard-core/      @wang-sunyang
+/guard-ui/        @wang-sunyang
+/guard-cli/       @wang-sunyang
+/guard-ksp/       @wang-sunyang
+/guard-audit/     @wang-sunyang
+
+# Build and CI
+/build.gradle.kts @wang-sunyang
+/settings.gradle.kts @wang-sunyang
+/gradle/          @wang-sunyang
+/ci/              @wang-sunyang
+/scripts/         @wang-sunyang
+
+# Governance
+/GOVERNANCE.md    @wang-sunyang
+/LICENSE          @wang-sunyang
+/AUTHORS.md       @wang-sunyang
+/TRADEMARK.md     @wang-sunyang
+/docs/            @wang-sunyang
+/.github/         @wang-sunyang
