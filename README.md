@@ -248,11 +248,28 @@ output_schema:
   required: [allowed, code]
   properties:
     allowed:        { type: boolean }
-    code:           { type: string, examples: [ALLOW, FUNCTION_BLOCKED, CONFIRMATION_REQUIRED, RATE_LIMITED] }
+    code:
+      type: string
+      enum: [ALLOW, CONFIRMATION_REQUIRED, INVALID_ARGUMENT, MISSING_ARGUMENT, RATE_LIMITED, USER_DENIED, NOT_AUTHORIZED, FUNCTION_BLOCKED, FUNCTION_NOT_FOUND]
+      description: Two values are decisions (ALLOW, CONFIRMATION_REQUIRED); the other seven are GuardErrorCode values, each carrying a retryable flag.
     retry_after_ms: { type: [integer, "null"] }
     retryable:      { type: boolean }
     hint:           { type: string }
 ```
+
+The nine values `code` can take, and what a client should do with each:
+
+| `code` | `retryable` | Meaning |
+|---|---|---|
+| `ALLOW` | — | Policy allows the call; the caller may execute it. |
+| `CONFIRMATION_REQUIRED` | — | Policy needs a human yes. Ask the user; do not retry blindly. |
+| `INVALID_ARGUMENT` | `true` | An argument violates the declared constraints. Fix it, then retry. |
+| `MISSING_ARGUMENT` | `true` | A required argument is absent. Supply it, then retry. |
+| `RATE_LIMITED` | `true` | Token bucket is empty. Wait `retry_after_ms`, then retry. |
+| `USER_DENIED` | `false` | The user said no. Do not retry; ask again first. |
+| `NOT_AUTHORIZED` | `false` | This caller may not invoke the function. Do not retry. |
+| `FUNCTION_BLOCKED` | `false` | The function is permanently closed to agents. Do not retry. |
+| `FUNCTION_NOT_FOUND` | `false` | No policy is registered for this `function_id`. Do not retry. |
 
 `guard_check_function` never returns `allowed: true` for `ALWAYS_DENY`, and `CONFIRM_ONCE` never auto-passes `Risk.CRITICAL` — the same two rules the Android library enforces. A `CONFIRM_*` decision comes back as `allowed: false` with `code: CONFIRMATION_REQUIRED`, because an MCP server has no UI and must not invent consent on the user's behalf.
 
@@ -407,12 +424,12 @@ Guard is **licensed per module**, not as one blob:
 
 | Module | License | Full text |
 |---|---|---|
-| `guard-core`, `guard-ksp`, `guard-ui` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
-| `guard-audit`, `guard-cli`, `sample/`, `guard-mcp` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
+| `guard-core`, `guard-ksp`, `guard-ui`, `guard-mcp`, `sample/` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
+| `guard-audit`, `guard-cli` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
 
-One caveat on `guard-mcp`: its own source files are Apache-2.0, but the module compiles `guard-core`'s `PolicyEngine` / `RateLimiter` sources (AGPL-3.0-only) into the same jar. A built `guard-mcp` distribution is therefore governed by AGPL-3.0 as a whole; the Apache-2.0 line covers the module's own files only.
+`guard-mcp` and `sample/` sit on the AGPL side because both *link* the enforcement layer, not because of a preference: `guard-mcp` compiles `guard-core`'s `PolicyEngine` / `RateLimiter` sources into its own jar, and `sample/` depends on `guard-core` / `guard-ui` / `guard-ksp`. Every artifact built from either module is therefore governed by AGPL-3.0 as a whole. Note §13: if you run `guard-mcp` as a network service, users of that service are entitled to the corresponding source — the "closed-source integration needs a commercial licence" framing does not apply here.
 
-Why the split: the enforcement layer (`guard-core`, its KSP processor, its confirmation dialog) stays copyleft so a fork of the policy engine stays open. The embeddable pieces that do not carry the enforcement layer — the audit model/exporter and the CLI — stay permissive, so a tool can read Guard's audit format without inheriting the copyleft.
+Why the split: the enforcement layer (`guard-core`, its KSP processor, its confirmation dialog) stays copyleft so a fork of the policy engine stays open. The embeddable pieces that do not carry the enforcement layer — the audit model/exporter and the CLI — stay permissive, so a tool can read Guard's audit format without inheriting the copyleft. That is the whole permissive list: a module qualifies only if a downstream consumer can use it without compiling or linking `guard-core`. `guard-mcp` and `sample/` do compile or link it, so they do not qualify.
 
 **Commercial licensing.** If AGPL-3.0 does not fit your product — closed source, app-store terms, internal policy — a commercial license for `guard-core` / `guard-ksp` / `guard-ui` is available. Open an issue titled `commercial license` or use the contact in [AUTHORS.md](AUTHORS.md).
 

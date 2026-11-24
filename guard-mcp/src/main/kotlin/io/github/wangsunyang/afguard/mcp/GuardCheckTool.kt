@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 Wang Sunyang
 
 package io.github.wangsunyang.afguard.mcp
@@ -13,8 +13,6 @@ import io.github.wangsunyang.afguard.internal.Decision
 import io.github.wangsunyang.afguard.internal.InMemoryConsentStore
 import io.github.wangsunyang.afguard.internal.PolicyEngine
 import io.github.wangsunyang.afguard.internal.RateLimiter
-import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * `guard_check_function` 的判定核心。

@@ -39,9 +39,8 @@ sourceSets {
 }
 
 dependencies {
-    // GuardError.toJson() 用 org.json。Android 上它是平台自带的；纯 JVM 上必须显式引入。
-    // 这是本项目唯一一个"额外"依赖，只落在 guard-mcp，不进任何 AAR。
-    implementation("org.json:json:20240303")
+    // 协议层只用 JDK 自带类型：JSONObject / JSONArray 见本模块的 mcp/Json.kt。
+    // 保持零第三方运行时依赖，这是 guard-mcp 能作为单文件分发二进制的前提。
     testImplementation("junit:junit:4.13.2")
     testImplementation(kotlin("test"))
 }

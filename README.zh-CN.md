@@ -302,10 +302,10 @@ ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 
 | 模块 | 许可 | 全文 |
 |---|---|---|
-| `guard-core`、`guard-ksp`、`guard-ui` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
-| `guard-audit`、`guard-cli`、`sample/`、`guard-mcp` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
+| `guard-core`、`guard-ksp`、`guard-ui`、`guard-mcp`、`sample/` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
+| `guard-audit`、`guard-cli` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
 
-`guard-mcp` 需要单独说明：它自己的源文件是 Apache-2.0，但该模块把 `guard-core` 的 `PolicyEngine` / `RateLimiter` 源码（AGPL-3.0-only）编进同一个 jar。因此构建出来的 `guard-mcp` 发行包整体受 AGPL-3.0 约束，Apache-2.0 只覆盖该模块自己的文件。
+`guard-mcp` 与 `sample/` 归入 AGPL，原因是两者**链接**了防护层，而不是风格偏好：`guard-mcp` 把 `guard-core` 的 `PolicyEngine` / `RateLimiter` 源码编进自己的 jar，`sample/` 依赖 `guard-core` / `guard-ui` / `guard-ksp`。因此由这两个模块构建出的任何产物整体都受 AGPL-3.0 约束。注意第 13 条：把 `guard-mcp` 作为网络服务对外提供时，该服务的使用者有权获取对应源码——"闭源集成需买商业许可"的说法在这里并不适用。
 
 为什么这么切：执行层（`guard-core` + 它的 KSP 处理器 + 确认弹窗）保持 copyleft，策略引擎的分叉也必须开源；不带执行层的可嵌入部件（审计模型 / 导出器、CLI、MCP server）保持宽松，这样别人读 Guard 的审计格式不必继承 copyleft。
 
