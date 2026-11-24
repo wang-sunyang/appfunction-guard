@@ -30,8 +30,8 @@ publishing {
                     url.set("https://github.com/wang-sunyang/appfunction-guard")
                     licenses {
                         license {
-                            name.set("MIT License")
-                            url.set("https://opensource.org/licenses/MIT")
+                            name.set("GNU Affero General Public License v3.0 only")
+                            url.set("https://www.gnu.org/licenses/agpl-3.0.txt")
                         }
                     }
                     developers {

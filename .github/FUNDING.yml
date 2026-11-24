@@ -1,0 +1,8 @@
+# 只启用已经真实开通的平台，避免提交无效配置。
+github: wang-sunyang
+
+# 需要先在 opencollective.com 建好项目，再把下面一行取消注释
+# open_collective: appfunction-guard
+
+# Tidelift 要求已发布的包（`0.1.0-alpha4` 已满足）；开通后取消注释
+# tidelift: maven/io.github.wang-sunyang:guard-core

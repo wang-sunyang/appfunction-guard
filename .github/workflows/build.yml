@@ -83,7 +83,9 @@ jobs:
 
       - name: Unit tests
         run: |
-          gradle testDebugUnitTest :guard-core:testDebugUnitTest :guard-audit:test :guard-cli:test \
+          # :guard-mcp 是纯 JVM 模块，Android 的 assembleDebug 不会碰它，必须显式列出来，
+          # 否则它只有被人本地跑过一次才算"编过"。
+          gradle testDebugUnitTest :guard-core:testDebugUnitTest :guard-audit:test :guard-cli:test :guard-mcp:test :guard-mcp:installDist \
             --stacktrace --no-daemon
 
       # 把跑了多少条、挂了几条打出来。"测试通过"这四个字得有人数兜底。
@@ -164,7 +166,11 @@ jobs:
             test -f "$D/$M-$V.pom"          || { echo "missing pom: $M"; exit 1; }
             test -f "$D/$M-$V-sources.jar"  || { echo "missing sources: $M"; exit 1; }
             test -f "$D/$M-$V-javadoc.jar"  || { echo "missing javadoc: $M"; exit 1; }
-            grep -q "MIT License" "$D/$M-$V.pom" || { echo "pom license missing: $M"; exit 1; }
+            case "$M" in
+              guard-audit) WANT_LICENSE="Apache License, Version 2.0" ;;
+              *)           WANT_LICENSE="GNU Affero General Public License v3.0 only" ;;
+            esac
+            grep -qF "$WANT_LICENSE" "$D/$M-$V.pom" || { echo "pom license mismatch: $M (want $WANT_LICENSE)"; exit 1; }
             grep -q "github.com/wang-sunyang/appfunction-guard" "$D/$M-$V.pom" || { echo "pom scm missing: $M"; exit 1; }
           done
           echo "publication metadata OK"

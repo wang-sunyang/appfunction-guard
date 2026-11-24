@@ -1,6 +1,6 @@
 # 给 Android 的 AI 后门装锁：第一周踩坑记录
 
-> 项目：[appfunction-guard](https://github.com/wang-sunyang/appfunction-guard)（MIT，alpha）
+> 项目：[appfunction-guard](https://github.com/wang-sunyang/appfunction-guard)（AGPL-3.0 / Apache-2.0 分模块，alpha）
 > 结论先放这里：**7 天里真正花时间的不是写拦截逻辑，而是四类"编译通过、运行静默失效"的坑。**
 
 ## 一、起因不是技术问题，是权限问题

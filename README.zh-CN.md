@@ -57,17 +57,19 @@ AppFunctionService.onExecuteFunction()
 
 ## 安装
 
-> **Maven 坐标（2026-11）：** 最新已发布版本 `0.1.0-alpha4` 仍位于旧 groupId `io.github.yangyang2857-rgb` 下，该命名空间现已**冻结**（其绑定的 GitHub 账号已不存在）。下面代码块是**当前可解析**的写法。从 `0.1.0-alpha5` 起改用 `io.github.wang-sunyang` —— 只有 groupId 变了，artifactId 不变。
+> **Maven 坐标（2026-11）：** groupId 已迁移到 `io.github.wang-sunyang`（GitHub 账号改名所致）。只有 groupId 变了，artifactId 不变。
+>
+> `0.1.0-alpha5` **尚未发布到 Maven Central**。在此之前发布的版本（截至 `0.1.0-alpha4`）位于已冻结的旧 groupId 下，仅为历史留档，不会再更新。完整坐标变更记录见 [CHANGELOG.md](CHANGELOG.md)，切换清单见 [docs/PUBLISHING.md](docs/PUBLISHING.md)。
 
 ```kotlin
 dependencies {
-    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
-    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha5")
+    ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 
     // 可选：现成的确认弹窗
-    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-ui:0.1.0-alpha5")
     // 可选：不带 Android 依赖的审计记录
-    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-audit:0.1.0-alpha5")
 }
 ```
 
@@ -114,6 +116,7 @@ fun deleteNote(@TextLimit(max = 64) id: String): Boolean = repo.delete(id)
 | `guard-ksp` | KSP 处理器 | 编译期生成参数校验器与函数元数据表 |
 | `guard-ui` | Android AAR | `DialogConfirmationHandler`：跟随生命周期、超时安全、主线程调用直接拒绝而不是死锁 |
 | `guard-cli` | JVM 应用 | 从 JSONL 审计文件导出 / 汇总，给需要把日志拿出 App 的人 |
+| `guard-mcp` | JVM 应用 | stdio MCP server，把策略引擎以 `guard_check_function` 工具暴露给任意 MCP 客户端 |
 
 前四个是发布坐标，`guard-cli` 是可运行程序，不作为库依赖。
 
@@ -130,6 +133,35 @@ gradle :guard-cli:installDist
 ```
 
 解析不了的行会报出来，不会静默丢弃——被截断的审计日志比吵闹的日志危险得多。
+
+---
+
+## MCP server（`guard-mcp`）
+
+如果你的 Agent 运行时说的是 [MCP](https://modelcontextprotocol.io) 而不是 AppFunctions，`guard-mcp` 用 stdio 把**同一套**策略引擎暴露出去。判定逻辑没有第二份实现：该模块直接编译 Guard 自己的 `PolicyEngine` / `RateLimiter` 源码，所以 MCP 侧的决定与 Android 侧的决定出自同一段代码。
+
+```bash
+gradle :guard-mcp:installDist
+./guard-mcp/build/install/guard-mcp/bin/guard-mcp      # stdin/stdout 上跑 JSON-RPC 2.0
+```
+
+工具 `guard_check_function` 是一个**策略询问器**：回答“这次调用会不会被放行”，不执行业务函数。
+
+| 入参 | 类型 | 含义 |
+|---|---|---|
+| `function_id` | string | 被守卫的函数，如 `deleteNote` |
+| `caller_id` | string | `<包名>@<uid>`，如 `com.example.agent@10123` |
+| `policy_context` | object | 可选：`policy`、`risk`、`rate_limit`、`consent` |
+
+| 出参 | 类型 | 含义 |
+|---|---|---|
+| `allowed` | boolean | 是否放行 |
+| `code` | string | `ALLOW` / `CONFIRMATION_REQUIRED` / 或某个 `GuardErrorCode` |
+| `retry_after_ms` | integer \| null | 仅 `RATE_LIMITED` 时有值 |
+
+机器可读元数据（YAML，含 input/output schema）见英文版 README 的 MCP 章节，两份内容一致。
+
+`ALWAYS_DENY` 永不返回 `allowed: true`，`CONFIRM_ONCE` 对 `Risk.CRITICAL` 永不自动放行 —— 与 Android 库是同两条规则。`CONFIRM_*` 在 MCP 侧返回 `allowed: false` + `code: CONFIRMATION_REQUIRED`，因为 MCP server 没有 UI，不能替用户点头。
 
 ---
 
@@ -220,11 +252,11 @@ KSP 生成的表缺失时（构建配置错了），校验被跳过，但每条�
 
 ```kotlin
 // 坐标与上面「安装」一致
-implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
-ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
+implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha5")
+ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 ```
 
-四个库模块自 2026-11-12 起已在 Maven Central，直接从 `https://repo1.maven.org/maven2/` 解析，不用 JitPack，也不用本地构建。发布流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)。
+库模块已发布到 Maven Central，直接从 `https://repo1.maven.org/maven2/` 解析，不用 JitPack，也不用本地构建。`0.1.0-alpha5`（新 groupId 的首个版本）尚未发布；发版流程与坐标切换清单见 [docs/PUBLISHING.md](docs/PUBLISHING.md)。
 
 ---
 
@@ -238,7 +270,7 @@ ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 - [x] KSP 处理器（生成校验器 + 元数据表）
 - [x] `guard-ui` 确认弹窗（`DialogConfirmationHandler`），sample 自己就在用
 - [x] `guard-cli` 审计导出（CSV / JSONL + summary），CI 有冒烟
-- [x] Maven Central —— `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` 的 `0.1.0-alpha4` 已发布，可直接从 `repo1.maven.org` 下载（GPG 签名，带 sources 与 javadoc）。坐标用 `io.github.wang-sunyang`，因为 Portal 只放行与账号名一致的 `io.github.*`。流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)
+- [x] Maven Central —— `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` 的 `0.1.0-alpha4` 已发布，可直接从 `repo1.maven.org` 下载（GPG 签名，带 sources 与 javadoc）。该版本早于 groupId 迁移；`0.1.0-alpha5` 才是 `io.github.wang-sunyang` 下的首个版本。流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)
 - [x] **真机端到端验证（阶段 B）** —— 2026-11-16 在 Android 17（API 37）真机上跑通：系统收录四个函数、`listNotes` 放行返回数据、`deleteNote` / `exportNotes` 首次 `USER_DENIED` 二次确认后执行、`wipeAllNotes` 返回 `FUNCTION_BLOCKED`。确认链路的拒绝与允许两个分支都验过。剩余手工项（弹窗外观与点击、超时后弹窗是否收起、杀进程审计清空、关弹窗权限降级、后台调用、关闭 AppFunction 开关）见 [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md)
 
 早期阶段，最有价值的是对**注解设计**的反馈，不是 bug 报告。
@@ -247,7 +279,7 @@ ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 
 ## 同类项目核查
 
-截至 2026 年 11 月，没有找到给 AppFunctions 做函数级授权 / 校验 / 限流 / 审计的现成库。GitHub 上 `appfunctions` 大约 72 个仓库，基本是个位数 star 的样例；唯一沾边的是 `anyfn`（UI 自动化），解决的是另一个问题——它驱动界面，不守卫 API 面。官方样例几百 star，无策略层。
+截至 2026-11-24（本次复核；上次核查为 2026 年 11 月上旬），没有找到给 AppFunctions 做函数级授权 / 校验 / 限流 / 审计的现成库。GitHub 上 `appfunctions` 大约 72 个仓库，基本是个位数 star 的样例；唯一沾边的是 `anyfn`（UI 自动化），解决的是另一个问题——它驱动界面，不守卫 API 面。官方样例几百 star，无策略层。
 
 如果你知道有先行者，开 issue 告诉我，我挂链接。这比假装第一更有价值。
 
@@ -266,7 +298,20 @@ ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
 
 ## 许可
 
-MIT，见 [LICENSE](LICENSE)。
+按模块分别授权，不是整仓一个许可：
+
+| 模块 | 许可 | 全文 |
+|---|---|---|
+| `guard-core`、`guard-ksp`、`guard-ui` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
+| `guard-audit`、`guard-cli`、`sample/`、`guard-mcp` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
+
+`guard-mcp` 需要单独说明：它自己的源文件是 Apache-2.0，但该模块把 `guard-core` 的 `PolicyEngine` / `RateLimiter` 源码（AGPL-3.0-only）编进同一个 jar。因此构建出来的 `guard-mcp` 发行包整体受 AGPL-3.0 约束，Apache-2.0 只覆盖该模块自己的文件。
+
+为什么这么切：执行层（`guard-core` + 它的 KSP 处理器 + 确认弹窗）保持 copyleft，策略引擎的分叉也必须开源；不带执行层的可嵌入部件（审计模型 / 导出器、CLI、MCP server）保持宽松，这样别人读 Guard 的审计格式不必继承 copyleft。
+
+**商业许可。** 如果 AGPL-3.0 不适合你的产品（闭源、应用商店条款、公司内部政策），`guard-core` / `guard-ksp` / `guard-ui` 可单独洽谈商业许可：开一个标题为 `commercial license` 的 issue，或用 [AUTHORS.md](AUTHORS.md) 里的联系方式。
+
+**拆分之前的版本。** 截至 `0.1.0-alpha4` 的所有发布版本都是 MIT，已获取的人继续按 MIT 使用。按模块拆分从 `0.1.0-alpha5` 起生效。
 
 ---
 

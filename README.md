@@ -1,14 +1,18 @@
 # AppFunction Guard
 
-**English** · [简体中文](README.zh-CN.md) · [Error codes](docs/ERROR_CODES.md) · [Changelog](CHANGELOG.md)
+**English** · [简体中文](README.zh-CN.md) · [Error codes](docs/ERROR_CODES.md) · [Changelog](CHANGELOG.md) · [Publishing](docs/PUBLISHING.md)
+
+> English is the primary text. A full [简体中文](README.zh-CN.md) translation is maintained in parallel; both are updated in the same commit.
 
 **Android 16 lets AI agents call your app's functions. Guard is the lock, the doorbell, and the visitor log it forgot to include.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![build](https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml/badge.svg)](https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/badge/Maven_Central-0.1.0--alpha5_(pending)-blue.svg)](#install)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE.AGPLv3)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE.Apache-2.0)
 [![Status: alpha](https://img.shields.io/badge/status-alpha-orange.svg)](#status)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.2-7F52FF.svg)](https://kotlinlang.org)
 [![minSdk 26](https://img.shields.io/badge/minSdk-26-green.svg)](#requirements)
-[![build](https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml/badge.svg)](https://github.com/wang-sunyang/appfunction-guard/actions/workflows/build.yml)
 
 ---
 
@@ -63,17 +67,19 @@ Everything runs before your business code. Nothing is a decorator you can forget
 
 ## Install
 
-> **Maven coordinates (2026-11):** the latest published version `0.1.0-alpha4` still lives under the old groupId `io.github.yangyang2857-rgb`, which is now **frozen** (its GitHub account no longer exists). The snippet below is therefore the *currently resolvable* one. Starting with `0.1.0-alpha5`, switch to `io.github.wang-sunyang` — only the groupId changes, artifactIds stay the same.
+> **Maven coordinates (2026-11):** the groupId is now `io.github.wang-sunyang` (GitHub account rename). Only the groupId changes — artifactIds stay the same.
+>
+> `0.1.0-alpha5` is **not on Maven Central yet**. Every version published before it (up to `0.1.0-alpha4`) lives under the frozen legacy groupId, which is kept solely for the historical record — it will not receive updates. The full coordinate history is in [CHANGELOG.md](CHANGELOG.md) and the switch checklist in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 ```kotlin
 dependencies {
-    implementation("io.github.yangyang2857-rgb:guard-core:0.1.0-alpha4")
-    ksp("io.github.yangyang2857-rgb:guard-ksp:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha5")
+    ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 
     // optional: ready-made confirmation dialog
-    implementation("io.github.yangyang2857-rgb:guard-ui:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-ui:0.1.0-alpha5")
     // optional: audit records without pulling in Android
-    implementation("io.github.yangyang2857-rgb:guard-audit:0.1.0-alpha4")
+    implementation("io.github.wang-sunyang:guard-audit:0.1.0-alpha5")
 }
 ```
 
@@ -142,8 +148,9 @@ Setup notes, the real-device `AppFunctionService` wiring, and the two ways peopl
 | `guard-ksp` | KSP processor | generates argument validators and the function metadata table at build time |
 | `guard-ui` | Android AAR | `DialogConfirmationHandler` — lifecycle aware, timeout safe, refuses instead of deadlocking on the main thread |
 | `guard-cli` | JVM app | audit export / summary from a JSONL dump, for people who want the log out of the app |
+| `guard-mcp` | JVM app | MCP server over stdio — exposes the policy engine to any MCP client as the `guard_check_function` tool |
 
-`guard-audit` / `guard-core` / `guard-ksp` / `guard-ui` are published coordinates; `guard-cli` is a runnable app, not a library dependency.
+`guard-audit` / `guard-core` / `guard-ksp` / `guard-ui` are published coordinates; `guard-cli` and `guard-mcp` are runnable apps, not library dependencies.
 
 ---
 
@@ -164,6 +171,90 @@ cat audit.jsonl | ./guard-cli/build/install/guard-cli/bin/guard-cli summary
 ```
 
 Unparseable lines are reported, not silently dropped: a truncated audit log is worse than a loud one.
+
+---
+
+## MCP server (`guard-mcp`)
+
+If your agent runtime speaks [MCP](https://modelcontextprotocol.io) instead of AppFunctions, `guard-mcp` exposes the *same* policy engine over stdio. No business logic is duplicated: the module compiles Guard's own `PolicyEngine` / `RateLimiter` sources, so a policy decision made through MCP and a decision made inside an Android app come from one implementation.
+
+```bash
+gradle :guard-mcp:installDist
+./guard-mcp/build/install/guard-mcp/bin/guard-mcp      # speaks JSON-RPC 2.0 on stdin/stdout
+```
+
+Tool: `guard_check_function` — a *policy oracle*. It answers "would this call be allowed?", it does not execute the function.
+
+| Input | Type | Meaning |
+|---|---|---|
+| `function_id` | string | the function being guarded, e.g. `deleteNote` |
+| `caller_id` | string | `<packageName>@<uid>`, e.g. `com.example.agent@10123` |
+| `policy_context` | object | optional `policy`, `risk`, `rate_limit`, `consent` — see the YAML below |
+
+| Output | Type | Meaning |
+|---|---|---|
+| `allowed` | boolean | whether the call may proceed |
+| `code` | string | `ALLOW`, `CONFIRMATION_REQUIRED`, or a `GuardErrorCode` (`FUNCTION_BLOCKED`, `RATE_LIMITED`, …) |
+| `retry_after_ms` | integer \| null | set only when `code = RATE_LIMITED` |
+
+Machine-readable description (drop this into an MCP client config or a tool registry):
+
+```yaml
+name: guard_check_function
+version: 0.1.0
+description: >
+  Policy oracle for AppFunctions-style tool calls. Returns whether a function
+  call would be allowed, denied or require user confirmation, without executing it.
+transport:
+  type: stdio
+  command: ./guard-mcp/build/install/guard-mcp/bin/guard-mcp
+input_schema:
+  type: object
+  required: [function_id, caller_id]
+  properties:
+    function_id:
+      type: string
+      description: Function identifier as declared by the app (e.g. deleteNote)
+    caller_id:
+      type: string
+      description: Caller identity as <packageName>@<uid>
+      pattern: "^[A-Za-z0-9_.]+@[0-9]+$"
+    policy_context:
+      type: object
+      description: Optional policy override; defaults come from GuardConfig
+      properties:
+        policy:
+          type: string
+          enum: [ALWAYS_DENY, CONFIRM_EACH, CONFIRM_ONCE, ALLOW]
+          default: CONFIRM_ONCE
+        risk:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          default: MEDIUM
+        rate_limit:
+          type: object
+          properties:
+            calls:        { type: integer, default: 10 }
+            per_seconds:  { type: integer, default: 60 }
+            burst:        { type: integer, default: 3 }
+            scope:        { type: string, enum: [PER_CALLER, GLOBAL], default: PER_CALLER }
+        consent:
+          type: object
+          properties:
+            granted:        { type: boolean, default: false }
+            expires_at_ms:  { type: integer }
+output_schema:
+  type: object
+  required: [allowed, code]
+  properties:
+    allowed:        { type: boolean }
+    code:           { type: string, examples: [ALLOW, FUNCTION_BLOCKED, CONFIRMATION_REQUIRED, RATE_LIMITED] }
+    retry_after_ms: { type: [integer, "null"] }
+    retryable:      { type: boolean }
+    hint:           { type: string }
+```
+
+`guard_check_function` never returns `allowed: true` for `ALWAYS_DENY`, and `CONFIRM_ONCE` never auto-passes `Risk.CRITICAL` — the same two rules the Android library enforces. A `CONFIRM_*` decision comes back as `allowed: false` with `code: CONFIRMATION_REQUIRED`, because an MCP server has no UI and must not invent consent on the user's behalf.
 
 ---
 
@@ -260,11 +351,11 @@ What actually broke during week 1, written down while it still hurt: [给 Androi
 
 ```kotlin
 // same coordinates as in Install above
-implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha4")
-ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha4")
+implementation("io.github.wang-sunyang:guard-core:0.1.0-alpha5")
+ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 ```
 
-All four library modules are on Maven Central since 2026-11-12 — resolve them straight from `https://repo1.maven.org/maven2/`, no JitPack, no local build. Release process: [docs/PUBLISHING.md](docs/PUBLISHING.md).
+Library modules are published to Maven Central — resolve them straight from `https://repo1.maven.org/maven2/`, no JitPack, no local build. `0.1.0-alpha5` (the first release under the new groupId) is pending; see [docs/PUBLISHING.md](docs/PUBLISHING.md) for the release process and the coordinate switch checklist.
 
 ---
 
@@ -280,7 +371,7 @@ Honest state of things:
 - [x] `sample/` — runnable demo app covering all four policies, rate limiting, redaction, audit viewer
 - [x] `guard-ui` — drop-in confirmation dialog (`DialogConfirmationHandler`), used by `sample` itself
 - [x] `guard-cli` — audit export to CSV / JSONL + summary, smoke tested in CI
-- [x] Maven Central — `0.1.0-alpha4` of `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` is published and downloadable from `repo1.maven.org` (GPG signed, sources + javadoc attached). Coordinates use `io.github.wang-sunyang` because Portal only grants `io.github.*` for the account name. Process: [docs/PUBLISHING.md](docs/PUBLISHING.md)
+- [x] Maven Central — `0.1.0-alpha4` of `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` is published and downloadable from `repo1.maven.org` (GPG signed, sources + javadoc attached). That release predates the groupId switch; `0.1.0-alpha5` will be the first under `io.github.wang-sunyang`. Process: [docs/PUBLISHING.md](docs/PUBLISHING.md)
 - [x] **End-to-end verification on a real device** — 2026-11-16, Android 17 (API 37): all four functions are indexed by the platform, `listNotes` passes through, `deleteNote` / `exportNotes` return `USER_DENIED` first and execute on the second (confirmed) attempt, `wipeAllNotes` returns `FUNCTION_BLOCKED`. Confirmation chain proven on both branches. Remaining manual items (dialog appearance, dialog teardown on timeout, process-kill audit reset, disabled-overlay fallback, background invocation, AppFunction toggle off): [docs/DEVICE_TEST.md](docs/DEVICE_TEST.md)
 
 CI: [`build.yml`](.github/workflows/build.yml) runs on every push to `main` — assembles all four library modules plus `sample` / `guard-cli`, runs unit tests, smoke tests the CLI, verifies publication metadata. Details: [docs/CI.md](docs/CI.md)
@@ -291,7 +382,7 @@ If you're here early: the interesting part is the *policy surface*, not the code
 
 ## Prior art check
 
-As of November 2026 I could not find an existing library that does per-function authorization / validation / rate limiting / audit for AppFunctions. GitHub search for `appfunctions` returns ~72 repos, almost all single-digit stars, mostly samples and one UI-automation tool (`anyfn`) that solves a different problem — it drives the UI, it doesn't guard the API surface. The official sample has a few hundred stars and no policy layer.
+As of 2026-11-24 (search re-run; the previous check was in early November 2026) I could not find an existing library that does per-function authorization / validation / rate limiting / audit for AppFunctions. GitHub search for `appfunctions` returns ~72 repos, almost all single-digit stars, mostly samples and one UI-automation tool (`anyfn`) that solves a different problem — it drives the UI, it doesn't guard the API surface. The official sample has a few hundred stars and no policy layer.
 
 If you know of prior art, open an issue and I'll link it here. That's more valuable than pretending to be first.
 
@@ -312,7 +403,20 @@ Background reading on the risk model: the AppFunctions security analysis coverin
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Guard is **licensed per module**, not as one blob:
+
+| Module | License | Full text |
+|---|---|---|
+| `guard-core`, `guard-ksp`, `guard-ui` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
+| `guard-audit`, `guard-cli`, `sample/`, `guard-mcp` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
+
+One caveat on `guard-mcp`: its own source files are Apache-2.0, but the module compiles `guard-core`'s `PolicyEngine` / `RateLimiter` sources (AGPL-3.0-only) into the same jar. A built `guard-mcp` distribution is therefore governed by AGPL-3.0 as a whole; the Apache-2.0 line covers the module's own files only.
+
+Why the split: the enforcement layer (`guard-core`, its KSP processor, its confirmation dialog) stays copyleft so a fork of the policy engine stays open. The embeddable pieces that do not carry the enforcement layer — the audit model/exporter and the CLI — stay permissive, so a tool can read Guard's audit format without inheriting the copyleft.
+
+**Commercial licensing.** If AGPL-3.0 does not fit your product — closed source, app-store terms, internal policy — a commercial license for `guard-core` / `guard-ksp` / `guard-ui` is available. Open an issue titled `commercial license` or use the contact in [AUTHORS.md](AUTHORS.md).
+
+**Releases before the split.** Everything published up to and including `0.1.0-alpha4` was released under MIT and remains MIT for anyone who already has it. The per-module split starts at `0.1.0-alpha5`.
 
 ---
 
