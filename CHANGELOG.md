@@ -23,7 +23,7 @@
 
 ### Fixed
 - `guard-mcp` 自身源文件与 `sample/` 的 SPDX 头从 Apache-2.0 改为 AGPL-3.0-only，与许可表口径一致（此前 POM/README 与文件头互相矛盾）
-- README 的 MCP 元数据：`code` 的 `examples` 换成完整 9 值 `enum`，并补决策码表（`ALLOW` / `CONFIRMATION_REQUIRED` / 7 个 `GuardErrorCode`，含 `retryable` 语义）
+- README 的 MCP 元数据：`code` 的 `examples` 换成完整 11 值 `enum`，并补决策码表（`ALLOW` / `CONFIRMATION_REQUIRED` / 9 个 `GuardErrorCode`，含 `retryable` 语义）
 
 ## [0.1.0-alpha4] - 2026-11-16
 

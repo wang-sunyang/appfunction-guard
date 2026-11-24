@@ -305,9 +305,10 @@ The part most worth stealing even if you never use this library.
 | `USER_DENIED` | **no** | the human said no. Stop. |
 | `NOT_AUTHORIZED` | **no** | caller not allowed |
 | `FUNCTION_BLOCKED` | **no** | permanently disabled |
+| `CONFIRMATION_TIMEOUT` | yes | the human never answered; one retry later is fine |
 | `UPSTREAM_ERROR` | **no** | your code broke, don't hammer it |
 
-Full reference: [docs/ERROR_CODES.md](docs/ERROR_CODES.md)
+These are the nine `GuardErrorCode` members; the MCP tool's `output_schema.code` adds the two decision values on top of them. Full reference: [docs/ERROR_CODES.md](docs/ERROR_CODES.md)
 
 ---
 
