@@ -305,6 +305,8 @@ ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 | `guard-core`、`guard-ksp`、`guard-ui` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
 | `guard-audit`、`guard-cli`、`sample/`、`guard-mcp` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
 
+`guard-mcp` 需要单独说明：它自己的源文件是 Apache-2.0，但该模块把 `guard-core` 的 `PolicyEngine` / `RateLimiter` 源码（AGPL-3.0-only）编进同一个 jar。因此构建出来的 `guard-mcp` 发行包整体受 AGPL-3.0 约束，Apache-2.0 只覆盖该模块自己的文件。
+
 为什么这么切：执行层（`guard-core` + 它的 KSP 处理器 + 确认弹窗）保持 copyleft，策略引擎的分叉也必须开源；不带执行层的可嵌入部件（审计模型 / 导出器、CLI、MCP server）保持宽松，这样别人读 Guard 的审计格式不必继承 copyleft。
 
 **商业许可。** 如果 AGPL-3.0 不适合你的产品（闭源、应用商店条款、公司内部政策），`guard-core` / `guard-ksp` / `guard-ui` 可单独洽谈商业许可：开一个标题为 `commercial license` 的 issue，或用 [AUTHORS.md](AUTHORS.md) 里的联系方式。
