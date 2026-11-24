@@ -78,15 +78,18 @@ treating any row as settled.
 | A | **Partly met** | One tagged release, `v0.1.0-alpha4`, published 2026-11-15 — eight days ago, and an alpha by its own name. |
 | B | **Not met** | Two issues and two PRs in the repository's history, all opened by the maintainer. Zero external contributions have completed the loop. |
 | C | **Met** | `GOVERNANCE.md`, `TRADEMARK.md`, `AUTHORS.md` and `.github/CODEOWNERS` all exist and are current; `main` rejects force-pushes and deletion, admins included. |
-| D | **Met** | `LICENSE` (MIT) and `AUTHORS.md` name Wang Sunyang personally; `TRADEMARK.md` states the marks belong to the individual and are used by the organization under permission only. |
+| D | **Met** | `LICENSE.AGPLv3` / `LICENSE.Apache-2.0` (per-module split) and `AUTHORS.md` name Wang Sunyang personally; `TRADEMARK.md` states the marks belong to the individual and are used by the organization under permission only. |
 
 ---
 
 ## 2. Ownership and licensing
 
 - **Copyright:** Wang Sunyang (`wang-sunyang`), 2026. Stated in `LICENSE`.
-- **Code licence:** MIT, covering every `guard-*` module and the `sample/` app. See
-  `LICENSE`.
+- **Code licence:** per module, not per repository.
+  `guard-core` / `guard-ksp` / `guard-ui` are **AGPL-3.0-only** (`LICENSE.AGPLv3`);
+  `guard-audit` / `guard-cli` / `guard-mcp` / `sample/` are **Apache-2.0** (`LICENSE.Apache-2.0`).
+  Releases up to and including `0.1.0-alpha4` were MIT and stay MIT for whoever already has them.
+  A commercial licence for the AGPL modules is available on request — see the License section of `README.md`.
 - **Dependencies:** Gradle resolves them at build time; each keeps its own licence. No
   dependency is vendored in this repository.
 - **The audit log format:** it is an interface, not a private detail. Changing its shape

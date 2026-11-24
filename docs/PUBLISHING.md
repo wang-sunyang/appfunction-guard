@@ -75,6 +75,38 @@ Password: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 > 为什么不在本地做：本地生成密钥没问题，但把私钥搬到 GitHub 这一步在手机上极难操作，
 > 而 runner 到 keyserver 的网络是通的。私钥只出现在 runner 内存和 GitHub 加密存储里，不落日志。
 
+## 坐标迁移（alpha4 → alpha5）
+
+背景：GitHub 账号从 `yangyang2857-rgb` 改名为 `wang-sunyang`，Maven Central 的命名空间跟着变了。
+整个迁移只在**发布坐标**层面，代码包名同步过一次（见 CHANGELOG `[Unreleased]`）。
+
+| | alpha4 及更早 | alpha5 起 |
+|---|---|---|
+| groupId | 旧账号名派生的命名空间（已冻结） | `io.github.wang-sunyang` |
+| artifactId | `guard-core` / `guard-ksp` / `guard-audit` / `guard-ui` | 不变 |
+| Central 状态 | 可解析，不再更新 | 待发布 |
+| 许可 | MIT | 按模块拆分（AGPL-3.0-only / Apache-2.0） |
+
+时间线（以仓库和 Central 的实际状态为准，不写“即将”）：
+
+1. **旧坐标冻结** — Central 上旧命名空间只保留 alpha3 / alpha4，不再追加版本。旧版本的元数据不会被删除，已依赖它的工程不会突然解析失败。
+2. **`0.1.0-alpha5` 未发布** — 仓库里 `version` 仍是 `0.1.0-alpha4`，README 安装块已按 alpha5 写好并在正文注明"尚未发布"。**在 alpha5 真正上传成功之前，README 的安装块对读者是不可解析的**，这是刻意的：宁可写明未发布，也不给一个指向已冻结命名空间的"当前可用"示例。
+3. **发 alpha5 时**按下面第 4 节清单执行，一步一勾。
+
+下游迁移（已依赖 alpha4 的工程）：
+
+1. 把坐标里的 groupId 换成 `io.github.wang-sunyang`，版本升到 `0.1.0-alpha5`；
+2. 检查许可：用 `guard-core` / `guard-ksp` / `guard-ui` 的工程从 MIT 进入 AGPL-3.0；如果这个变化不可接受，先停在 alpha4（MIT 不会因为新版本发布而失效），或走商业许可；
+3. `guard-audit` 从 MIT 变为 Apache-2.0，对使用者没有额外义务（保留版权与声明即可）。
+
+不要做的事：
+
+- 不要为了"两个坐标都能解析"而在同一工程里同时依赖新旧坐标 —— 同一个类会从两个 artifact 里出现两次。
+- 不要在旧命名空间下发新版本 —— Portal 已不授予该命名空间。
+- 不要把 alpha4 的 POM 当作 alpha5 的模板 —— 里面的 license 字段已经过期，alpha5 的 POM 由各模块 `build.gradle.kts` 生成。
+
+---
+
 ## 发版（每次）
 
 ### 常规方式：点一下

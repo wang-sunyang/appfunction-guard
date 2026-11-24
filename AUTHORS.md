@@ -10,7 +10,9 @@ employer or client, current or future.
 - Contact: nightglean@foxmail.com
 
 Copyright (c) 2026 Wang Sunyang. All rights reserved except as expressly granted in
-`LICENSE (MIT)`.
+`LICENSE.AGPLv3` (`guard-core` / `guard-ksp` / `guard-ui`) and `LICENSE.Apache-2.0`
+(`guard-audit` / `guard-cli` / `guard-mcp` / `sample/`). Releases up to and including
+`0.1.0-alpha4` were licensed MIT and remain so.
 
 ## Authors
 

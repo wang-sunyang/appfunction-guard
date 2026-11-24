@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Wang Sunyang
+
 package io.github.wangsunyang.afguard.sample
 
 import android.os.Bundle

@@ -8,6 +8,15 @@
 - 发布坐标从 `io.github.yangyang2857-rgb` 迁移到 `io.github.wang-sunyang`（GitHub 账号更名所致）。旧坐标 `io.github.yangyang2857-rgb:*`（`0.1.0-alpha3` / `0.1.0-alpha4`）仍可从 Central 解析，但已冻结、不再更新；`0.1.0-alpha5` 起统一走新坐标。
 - 代码包名（namespace）从 `io.github.yangyang2857.afguard` 迁移到 `io.github.wangsunyang.afguard`（清理旧账号残留；Java/Kotlin 包名去连字符，与 groupId `io.github.wang-sunyang` 的不一致是行业惯例）。
 
+### Added
+- `guard-mcp`：stdio MCP server，暴露工具 `guard_check_function`（`function_id` / `caller_id` / `policy_context` → `allowed` / `code` / `retry_after_ms`）。判定复用 guard-core 的 `PolicyEngine` / `RateLimiter` 源码编译，不复制逻辑；`ALWAYS_DENY` 永不放行、`CONFIRM_ONCE` 对 `CRITICAL` 永不自动放行
+- `LICENSE.AGPLv3`、`LICENSE.Apache-2.0`；`.github/FUNDING.yml`
+
+### Changed
+- 许可从整仓 MIT 改为**按模块拆分**：`guard-core` / `guard-ksp` / `guard-ui` → AGPL-3.0-only；`guard-audit` / `guard-cli` / `guard-mcp` / `sample/` → Apache-2.0。README 增双许可与商业许可路径，`GOVERNANCE.md` / `AUTHORS.md` / 各模块 POM 的 license 字段同步，CI 的 POM 校验改为按模块断言期望许可证。`0.1.0-alpha4` 及更早版本仍为 MIT
+- README：badges 增 Maven Central 与双许可，安装块切到新 groupId（文中注明 `0.1.0-alpha5` 尚未发布），Prior art 复核日期更新为 2026-11-24
+- `docs/PUBLISHING.md`：新增「坐标迁移（alpha4 → alpha5）」章节
+
 ## [0.1.0-alpha4] - 2026-11-16
 
 第一个真正装到设备上、被系统收录并执行过的版本。alpha3 只证明"能发布、单测能过"，这一版补上了平台侧那格空白。

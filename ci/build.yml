@@ -134,7 +134,11 @@ jobs:
             test -f "$D/$M-$V.pom"          || { echo "missing pom: $M"; exit 1; }
             test -f "$D/$M-$V-sources.jar"  || { echo "missing sources: $M"; exit 1; }
             test -f "$D/$M-$V-javadoc.jar"  || { echo "missing javadoc: $M"; exit 1; }
-            grep -q "MIT License" "$D/$M-$V.pom" || { echo "pom license missing: $M"; exit 1; }
+            case "$M" in
+              guard-audit) WANT_LICENSE="Apache License, Version 2.0" ;;
+              *)           WANT_LICENSE="GNU Affero General Public License v3.0 only" ;;
+            esac
+            grep -qF "$WANT_LICENSE" "$D/$M-$V.pom" || { echo "pom license mismatch: $M (want $WANT_LICENSE)"; exit 1; }
             grep -q "github.com/wang-sunyang/appfunction-guard" "$D/$M-$V.pom" || { echo "pom scm missing: $M"; exit 1; }
           done
           echo "publication metadata OK"

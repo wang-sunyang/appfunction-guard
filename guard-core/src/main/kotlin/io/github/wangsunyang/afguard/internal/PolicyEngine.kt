@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (c) 2026 Wang Sunyang
+
 package io.github.wangsunyang.afguard.internal
 
 import io.github.wangsunyang.afguard.CallerIdentity
