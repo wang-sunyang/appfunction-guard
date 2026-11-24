@@ -16,6 +16,7 @@
 - 许可从整仓 MIT 改为**按模块拆分**：`guard-core` / `guard-ksp` / `guard-ui` → AGPL-3.0-only；`guard-mcp` / `sample/` → AGPL-3.0-only（两者都编译或链接防护层，整体执法），`guard-audit` / `guard-cli` → Apache-2.0。README 增双许可与商业许可路径，`GOVERNANCE.md` / `AUTHORS.md` / 各模块 POM 的 license 字段同步，CI 的 POM 校验改为按模块断言期望许可证。`0.1.0-alpha4` 及更早版本仍为 MIT
 - README：badges 增 Maven Central 与双许可，安装块切到新 groupId（文中注明 `0.1.0-alpha5` 尚未发布），Prior art 复核日期更新为 2026-11-24
 - `docs/PUBLISHING.md`：新增「坐标迁移（alpha4 → alpha5）」章节
+- `guard-core`：`GuardErrorCode` 枚举从 `GuardResult.kt` 拆到独立文件 `GuardErrorCode.kt`，纯 JVM 侧（`guard-mcp`）只编这个纯数据文件，不必为 `GuardError.toJson()` 的平台 JSON 付依赖代价；Android 侧行为不变
 
 ### Removed
 - `guard-mcp` 移除 `org.json:json:20240303` 依赖。协议层改用自带的 `mcp/Json.kt`（object / array / string / number / true / false / null 的解析与序列化），`guard-mcp` 回到零第三方运行时依赖，`installDist` 产物不再需要额外 classpath 条目

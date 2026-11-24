@@ -6,57 +6,6 @@ package io.github.wangsunyang.afguard
 import org.json.JSONObject
 
 /**
- * Agent 可读的错误码。
- *
- * 设计目标：让调用方 LLM 拿到失败结果时，能明确知道
- * "是要改参数、要等、还是要问人"，而不是只能盲目重试。
- *
- * [retryable] 是这里最关键的一个字段：
- * 明确的 false 能直接掐掉 Agent 的死循环重试。
- */
-enum class GuardErrorCode(
-    val retryable: Boolean,
-    val defaultHint: String
-) {
-    INVALID_ARGUMENT(
-        retryable = true,
-        defaultHint = "One or more arguments violate the declared constraints. Fix them and retry."
-    ),
-    MISSING_ARGUMENT(
-        retryable = true,
-        defaultHint = "A required argument is missing. Supply it and retry."
-    ),
-    RATE_LIMITED(
-        retryable = true,
-        defaultHint = "Too many calls. Wait for retryAfterMs, then retry."
-    ),
-    USER_DENIED(
-        retryable = false,
-        defaultHint = "The user explicitly denied this call. Do not retry. Ask the user first."
-    ),
-    NOT_AUTHORIZED(
-        retryable = false,
-        defaultHint = "This caller is not allowed to invoke this function. Do not retry."
-    ),
-    FUNCTION_BLOCKED(
-        retryable = false,
-        defaultHint = "This function is permanently closed to agents. Do not retry."
-    ),
-    FUNCTION_NOT_FOUND(
-        retryable = false,
-        defaultHint = "No such function is exposed by this app. Check the available function list."
-    ),
-    CONFIRMATION_TIMEOUT(
-        retryable = true,
-        defaultHint = "The user did not respond to the confirmation in time. You may retry once later."
-    ),
-    UPSTREAM_ERROR(
-        retryable = false,
-        defaultHint = "The app's own logic failed. Do not retry blindly; report it."
-    )
-}
-
-/**
  * 结构化错误。
  *
  * 序列化后形如：

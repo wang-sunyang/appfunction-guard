@@ -250,14 +250,15 @@ output_schema:
     allowed:        { type: boolean }
     code:
       type: string
-      enum: [ALLOW, CONFIRMATION_REQUIRED, INVALID_ARGUMENT, MISSING_ARGUMENT, RATE_LIMITED, USER_DENIED, NOT_AUTHORIZED, FUNCTION_BLOCKED, FUNCTION_NOT_FOUND]
-      description: Two values are decisions (ALLOW, CONFIRMATION_REQUIRED); the other seven are GuardErrorCode values, each carrying a retryable flag.
+      enum: [ALLOW, CONFIRMATION_REQUIRED, INVALID_ARGUMENT, MISSING_ARGUMENT, RATE_LIMITED, USER_DENIED,
+             NOT_AUTHORIZED, FUNCTION_BLOCKED, FUNCTION_NOT_FOUND, CONFIRMATION_TIMEOUT, UPSTREAM_ERROR]
+      description: Two values are decisions (ALLOW, CONFIRMATION_REQUIRED); the other nine are GuardErrorCode values, each carrying a retryable flag.
     retry_after_ms: { type: [integer, "null"] }
     retryable:      { type: boolean }
     hint:           { type: string }
 ```
 
-The nine values `code` can take, and what a client should do with each:
+The eleven values `code` can take, and what a client should do with each:
 
 | `code` | `retryable` | Meaning |
 |---|---|---|
@@ -270,6 +271,8 @@ The nine values `code` can take, and what a client should do with each:
 | `NOT_AUTHORIZED` | `false` | This caller may not invoke the function. Do not retry. |
 | `FUNCTION_BLOCKED` | `false` | The function is permanently closed to agents. Do not retry. |
 | `FUNCTION_NOT_FOUND` | `false` | No policy is registered for this `function_id`. Do not retry. |
+| `CONFIRMATION_TIMEOUT` | `true` | The user did not answer the confirmation in time. One retry later is fine. |
+| `UPSTREAM_ERROR` | `false` | The app's own logic failed. Do not retry blindly; report it. |
 
 `guard_check_function` never returns `allowed: true` for `ALWAYS_DENY`, and `CONFIRM_ONCE` never auto-passes `Risk.CRITICAL` — the same two rules the Android library enforces. A `CONFIRM_*` decision comes back as `allowed: false` with `code: CONFIRMATION_REQUIRED`, because an MCP server has no UI and must not invent consent on the user's behalf.
 

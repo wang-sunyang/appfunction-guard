@@ -13,9 +13,10 @@ application {
 // 判定逻辑只有一份。
 //
 // guard-core 是 Android library（AGP），guard-mcp 是纯 JVM，两者无法直接依赖。
-// 这里把 guard-core 里不碰 android.* 的源文件编进本模块：PolicyEngine / RateLimiter
-// 与 Android 侧跑的是同一份 .kt，不是抄过来的第二份实现。剩下那些 import
-// android.os.* 的文件逐个排除，排除列表就是"哪些东西 Android-only"的清单。
+// 这里把 guard-core 里既不碰 android.*、也不碰 org.json 的源文件编进本模块：
+// PolicyEngine / RateLimiter / GuardErrorCode 与 Android 侧跑的是同一份 .kt，
+// 不是抄过来的第二份实现。排除列表就是"哪些东西只能活在 Android 上"的清单，
+// 也正是本模块零第三方依赖的边界。
 val coreKotlinDir = rootProject.layout.projectDirectory.dir("guard-core/src/main/kotlin")
 
 sourceSets {
@@ -29,6 +30,9 @@ sourceSets {
                 "io/github/wangsunyang/afguard/DefaultCallerResolver.kt",
                 "io/github/wangsunyang/afguard/GuardedCall.kt",
                 "io/github/wangsunyang/afguard/GuardConfig.kt",
+                // org.json：Android 平台自带，纯 JVM 上没有。GuardErrorCode 已拆到独立文件，
+                // 本模块只需要那个枚举，不需要这里的 GuardError.toJson()
+                "io/github/wangsunyang/afguard/GuardResult.kt",
                 "io/github/wangsunyang/afguard/internal/Auditor.kt",
                 "io/github/wangsunyang/afguard/internal/FunctionMeta.kt",
                 "io/github/wangsunyang/afguard/internal/Redactor.kt",
