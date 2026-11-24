@@ -410,6 +410,8 @@ Guard is **licensed per module**, not as one blob:
 | `guard-core`, `guard-ksp`, `guard-ui` | AGPL-3.0-only | [LICENSE.AGPLv3](LICENSE.AGPLv3) |
 | `guard-audit`, `guard-cli`, `sample/`, `guard-mcp` | Apache-2.0 | [LICENSE.Apache-2.0](LICENSE.Apache-2.0) |
 
+One caveat on `guard-mcp`: its own source files are Apache-2.0, but the module compiles `guard-core`'s `PolicyEngine` / `RateLimiter` sources (AGPL-3.0-only) into the same jar. A built `guard-mcp` distribution is therefore governed by AGPL-3.0 as a whole; the Apache-2.0 line covers the module's own files only.
+
 Why the split: the enforcement layer (`guard-core`, its KSP processor, its confirmation dialog) stays copyleft so a fork of the policy engine stays open. The embeddable pieces that do not carry the enforcement layer — the audit model/exporter and the CLI — stay permissive, so a tool can read Guard's audit format without inheriting the copyleft.
 
 **Commercial licensing.** If AGPL-3.0 does not fit your product — closed source, app-store terms, internal policy — a commercial license for `guard-core` / `guard-ksp` / `guard-ui` is available. Open an issue titled `commercial license` or use the contact in [AUTHORS.md](AUTHORS.md).
