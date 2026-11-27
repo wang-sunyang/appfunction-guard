@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 Wang Sunyang
 
 package io.github.wangsunyang.afguard.mcp
 
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.PrintStream
 

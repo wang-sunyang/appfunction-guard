@@ -81,6 +81,18 @@ jobs:
             :guard-cli:installDist \
             --stacktrace --no-daemon
 
+      # 回归护栏：guard-mcp 对外的一个卖点是「单文件分发、零第三方运行时依赖」。
+      - name: guard-mcp stays dependency-free
+        run: |
+          if grep -nE '^\s*implementation\(' guard-mcp/build.gradle.kts; then
+            echo "guard-mcp 引入了运行时依赖，零依赖约束被破坏" >&2
+            exit 1
+          fi
+          if grep -rnE '^import (org\.json|com\.google\.gson|com\.squareup\.moshi|kotlinx\.serialization)' guard-mcp/src; then
+            echo "guard-mcp 引入了第三方 JSON 实现，应当用自带的 mcp/Json.kt" >&2
+            exit 1
+          fi
+
       - name: Unit tests
         run: |
           # :guard-mcp 是纯 JVM 模块，Android 的 assembleDebug 不会碰它，必须显式列出来，
