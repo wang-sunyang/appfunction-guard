@@ -10,9 +10,10 @@ employer or client, current or future.
 - Contact: nightglean@foxmail.com
 
 Copyright (c) 2026 Wang Sunyang. All rights reserved except as expressly granted in
-`LICENSE.AGPLv3` (`guard-core` / `guard-ksp` / `guard-ui`) and `LICENSE.Apache-2.0`
-(`guard-audit` / `guard-cli` / `guard-mcp` / `sample/`). Releases up to and including
-`0.1.0-alpha4` were licensed MIT and remain so.
+`LICENSE.AGPLv3` (`guard-core` / `guard-ksp` / `guard-ui` / `guard-mcp` / `sample/`) and
+`LICENSE.Apache-2.0` (`guard-audit` / `guard-cli`). Releases up to and including
+`0.1.0-alpha4` were licensed MIT and remain so. See [`docs/LICENSING.md`](docs/LICENSING.md)
+for the policy behind the split and the staged roadmap for its long-term form.
 
 ## Authors
 
@@ -22,10 +23,15 @@ Copyright (c) 2026 Wang Sunyang. All rights reserved except as expressly granted
 
 ## Contributions
 
-Contributions are accepted under `GOVERNANCE.md`. Opening a pull request does **not**
-transfer copyright: each contributor keeps copyright in their own contribution and
-grants the project a perpetual, worldwide, non-exclusive, royalty-free licence to
-use, modify and redistribute it as part of this project.
+Contributions are accepted under `GOVERNANCE.md` and require a Developer Certificate of
+Origin sign-off ([DCO 1.1](https://developercertificate.org/)): every commit must carry a
+`Signed-off-by:` line matching its author. `git commit -s` adds it.
+
+Opening a pull request does **not** transfer copyright. Each contributor keeps copyright
+in their own contribution and grants the project a perpetual, worldwide, non-exclusive,
+royalty-free licence to use, modify and redistribute it as part of this project. No
+copyright assignment is requested; see §5 of [`docs/LICENSING.md`](docs/LICENSING.md) for
+why sign-off was chosen over a CLA.
 
 ## Why this file exists
 

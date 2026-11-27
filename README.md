@@ -435,7 +435,7 @@ Guard is **licensed per module**, not as one blob:
 
 Why the split: the enforcement layer (`guard-core`, its KSP processor, its confirmation dialog) stays copyleft so a fork of the policy engine stays open. The embeddable pieces that do not carry the enforcement layer — the audit model/exporter and the CLI — stay permissive, so a tool can read Guard's audit format without inheriting the copyleft. That is the whole permissive list: a module qualifies only if a downstream consumer can use it without compiling or linking `guard-core`. `guard-mcp` and `sample/` do compile or link it, so they do not qualify.
 
-**Commercial licensing.** If AGPL-3.0 does not fit your product — closed source, app-store terms, internal policy — a commercial license for `guard-core` / `guard-ksp` / `guard-ui` is available. Open an issue titled `commercial license` or use the contact in [AUTHORS.md](AUTHORS.md).
+**Other licensing arrangements.** If the terms above do not fit your product — closed source, app-store conditions, an internal AGPL ban — ask: open an issue titled `commercial license`, or use the contact in [AUTHORS.md](AUTHORS.md). Whether an alternative is available depends on the copyright holder's willingness to talk, not on terms promised in advance. Why the licences were chosen this way, and what would change them, is recorded in [docs/LICENSING.md](docs/LICENSING.md).
 
 **Releases before the split.** Everything published up to and including `0.1.0-alpha4` was released under MIT and remains MIT for anyone who already has it. The per-module split starts at `0.1.0-alpha5`.
 

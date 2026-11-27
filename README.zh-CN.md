@@ -307,9 +307,9 @@ ksp("io.github.wang-sunyang:guard-ksp:0.1.0-alpha5")
 
 `guard-mcp` 与 `sample/` 归入 AGPL，原因是两者**链接**了防护层，而不是风格偏好：`guard-mcp` 把 `guard-core` 的 `PolicyEngine` / `RateLimiter` 源码编进自己的 jar，`sample/` 依赖 `guard-core` / `guard-ui` / `guard-ksp`。因此由这两个模块构建出的任何产物整体都受 AGPL-3.0 约束。注意第 13 条：把 `guard-mcp` 作为网络服务对外提供时，该服务的使用者有权获取对应源码——"闭源集成需买商业许可"的说法在这里并不适用。
 
-为什么这么切：执行层（`guard-core` + 它的 KSP 处理器 + 确认弹窗）保持 copyleft，策略引擎的分叉也必须开源；不带执行层的可嵌入部件（审计模型 / 导出器、CLI、MCP server）保持宽松，这样别人读 Guard 的审计格式不必继承 copyleft。
+为什么这么切：执行层（`guard-core` + 它的 KSP 处理器 + 确认弹窗）保持 copyleft，策略引擎的分叉也必须开源；不带执行层的可嵌入部件（审计模型 / 导出器、CLI）保持宽松，这样别人读 Guard 的审计格式不必继承 copyleft。宽松清单就是这些：只有下游消费者不编译、不链接 `guard-core` 才能入选；`guard-mcp` 与 `sample/` 都要编译或链接它，所以不入选。
 
-**商业许可。** 如果 AGPL-3.0 不适合你的产品（闭源、应用商店条款、公司内部政策），`guard-core` / `guard-ksp` / `guard-ui` 可单独洽谈商业许可：开一个标题为 `commercial license` 的 issue，或用 [AUTHORS.md](AUTHORS.md) 里的联系方式。
+**其他许可安排。** 如果上面的条款不适合你的产品（闭源、应用商店条件、公司内部禁用 AGPL），可以来谈：开一个标题为 `commercial license` 的 issue，或用 [AUTHORS.md](AUTHORS.md) 里的联系方式。是否提供替代方案取决于版权人的意愿，而非事先承诺的条款。许可为何这样划分、什么条件下会变，记录在 [docs/LICENSING.md](docs/LICENSING.md)。
 
 **拆分之前的版本。** 截至 `0.1.0-alpha4` 的所有发布版本都是 MIT，已获取的人继续按 MIT 使用。按模块拆分从 `0.1.0-alpha5` 起生效。
 
